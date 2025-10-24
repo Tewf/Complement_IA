@@ -86,7 +86,7 @@ public class BatailleNavale {
     public static void main(String[] args) {
         int taille = DEFAULT_TAILLE;
         int[] flotte = DEFAULT_FLOTTE;
-        boolean vsBot = false;
+        boolean vsBot = true;
         // parse arguments
         if (args != null && args.length > 0) {
             if (args[0].equalsIgnoreCase("bot")) {
