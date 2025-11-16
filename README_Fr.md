@@ -4,59 +4,6 @@ Ce dépôt contient une implémentation Java du jeu « Bataille Navale » accomp
 d'outils pour évaluer automatiquement des stratégies (bots) et produire des
 résultats expérimentaux réutilisables.
 
-Le projet fournit : la logique de jeu, plusieurs implémentations de joueurs,
-une interface graphique minimale (Swing) et des utilitaires permettant de
-générer des tournois et des synthèses statistiques (CSV, graphiques PNG).
-
-Résumé des fonctionnalités
-
-- Moteur de jeu complet (grille, navires, coordination des tirs).
-- Joueurs : joueur humain via UI et plusieurs bots (Uniforme, Markov, MonteCarlo, Smart).
-- Architecture modulaire Java (packages organisés par fonctionnalité).
-- Outils statistiques :
-  - `Tournament` : tournoi round-robin entre bots (génère CSV et table lisible).
-  - `Performance` : self-play par bot pour estimer distributions de performance.
-
-Prérequis
-
-- JDK 11 ou supérieur.
-- Shell POSIX (exemples fournis pour `bash`).
-
-Compilation
-
-```bash
-# Compiler les sources dans le dossier `bin`
-javac -d bin $(find src -name "*.java")
-```
-
-Exécution — exemples
-
-- Lancer l'interface graphique principale :
-
-```bash
-java --module-path bin -m ComplementIA/bataillenavale.Main
-```
-
-- Lancer un tournoi (ex. 1000 parties par confrontation) :
-
-```bash
-java --module-path bin -m ComplementIA/statistique.Tournament 1000
-```
-
-- Lancer l'outil de performance (ex. 100 essais self-play par bot) :
-
-```bash
-java --module-path bin -m ComplementIA/statistique.Performance 100
-```
-
-Fichiers produits
-
-# Projet : Bataille Navale — Extensions statistiques
-
-Ce dépôt contient une implémentation Java du jeu « Bataille Navale » accompagnée
-d'outils pour évaluer automatiquement des stratégies (bots) et produire des
-résultats expérimentaux réutilisables.
-
 Fonctionnalités principales
 
 - Moteur de jeu complet (grille, navires, gestion des tirs).
