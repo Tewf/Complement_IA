@@ -14,8 +14,8 @@ import javax.swing.SwingUtilities;
 import logique.Coordonnee;
 
 /**
- * Représentation graphique d'une grille.  Chaque case est un bouton
- * cliquable.  Des couleurs sont utilisées pour indiquer les tirs à
+ * Représentation graphique d'une grille. Chaque case est un bouton
+ * cliquable. Des couleurs sont utilisées pour indiquer les tirs à
  * l'eau, les touches et les navires placés (pour la grille du joueur).
  */
 class JButtonCoordonnee extends JButton {
@@ -35,9 +35,9 @@ public class GrilleGraphique extends JPanel implements ActionListener {
     private Coordonnee coordonneeSelectionnee;
 
     /**
-     * Construit une grille graphique de la taille donnée.  La grille
-     * comporte une ligne et une colonne supplémentaire pour afficher les
-     * en‑têtes (lettres en haut et chiffres à gauche).
+     * Construit une grille graphique de la taille donnée. La grille
+     * comporte une ligne et une colonne supplémentaires pour afficher les
+     * en-têtes (lettres en haut et numéros de ligne à gauche).
      */
     public GrilleGraphique(int taille) {
         this.setLayout(new GridLayout(taille + 1, taille + 1));
@@ -64,8 +64,8 @@ public class GrilleGraphique extends JPanel implements ActionListener {
     }
 
     /**
-     * Colore une seule case avec la couleur fournie.  Aucune vérification
-     * n'est effectuée si les indices sortent du tableau.
+     * Colore une seule case avec la couleur fournie. Une vérification de
+     * bornes est effectuée pour éviter des IndexOutOfBounds.
      */
     public void colorie(Coordonnee cord, Color color) {
         int row = cord.getLigne();
@@ -77,7 +77,7 @@ public class GrilleGraphique extends JPanel implements ActionListener {
 
     /**
      * Colore toutes les cases entre deux coordonnées (incluses) avec la
-     * couleur fournie.  Utilisé lors du placement automatique des navires.
+     * couleur fournie. Utilisé pour la visualisation du placement automatique.
      */
     public void colorie(Coordonnee debut, Coordonnee fin, Color color) {
         for (int i = debut.getLigne(); i <= fin.getLigne(); i++) {
@@ -90,9 +90,9 @@ public class GrilleGraphique extends JPanel implements ActionListener {
     }
 
     /**
-     * Active ou désactive tous les boutons de la grille.  On utilise un
-     * invokeLater pour s'assurer que la mise à jour se fait dans le
-     * thread de l'interface graphique.
+     * Active ou désactive tous les boutons de la grille. Utilise
+     * `invokeLater` pour s'assurer que les mises à jour ont lieu sur le
+     * thread d'affichage (Event Dispatch Thread).
      */
     public void setClicActive(boolean active) {
         SwingUtilities.invokeLater(() -> {
@@ -115,9 +115,8 @@ public class GrilleGraphique extends JPanel implements ActionListener {
     }
 
     /**
-     * Bloque jusqu'à ce qu'une case soit cliquée et retourne alors la
-     * coordonnée sélectionnée.  La grille est réactivée automatiquement
-     * avant de bloquer.
+     * Bloque jusqu'à ce qu'une case soit cliquée puis retourne la coordonnée
+     * sélectionnée. La grille est réactivée automatiquement avant le blocage.
      */
     public synchronized Coordonnee getCoordonneeSelectionnee() {
         this.setClicActive(true);

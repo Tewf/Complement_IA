@@ -7,12 +7,12 @@ import logique.GrilleNavale;
 import logique.Navire;
 
 /**
- * Couche graphique par dessus la logique de la grille.  Chaque fois qu'un
- * navire est ajouté ou qu'un tir est reçu, la grille graphique est
- * colorée pour refléter l'état (vert pour les navires, rouge pour les
- * touches, bleu pour les tirs à l'eau).  Cette classe ne fournit pas
- * directement d'interface pour récupérer les informations ; elle délègue
- * à `GrilleNavale` pour la logique.
+ * Couche graphique au-dessus de la logique de la grille.
+ *
+ * Lorsqu'un navire est ajouté ou qu'un tir est reçu, la grille graphique est
+ * colorée afin de refléter l'état courant (vert = navire, rouge = touché,
+ * bleu = manqué). Cette classe délègue la logique métier à `GrilleNavale`
+ * et se limite à la mise à jour de l'affichage.
  */
 public class GrilleNavaleGraphique extends GrilleNavale {
     private final GrilleGraphique gg;
@@ -23,7 +23,8 @@ public class GrilleNavaleGraphique extends GrilleNavale {
     }
 
     /**
-     * Retourne la grille graphique associée pour l'affichage.
+     * Retourne la grille graphique associée, utilisée par l'interface pour
+     * l'affichage et les interactions utilisateur.
      */
     public GrilleGraphique getGrilleGraphique() {
         return gg;
@@ -31,6 +32,7 @@ public class GrilleNavaleGraphique extends GrilleNavale {
 
     @Override
     public boolean ajouteNavire(Navire n) {
+        // Délégation à la logique : si l'ajout réussit, colorier la zone
         boolean success = super.ajouteNavire(n);
         if (success) {
             gg.colorie(n.getDebut(), n.getFin(), Color.GREEN);
@@ -40,6 +42,7 @@ public class GrilleNavaleGraphique extends GrilleNavale {
 
     @Override
     public boolean recoitTir(Coordonnee c) {
+        // Enregistrer le tir via la logique, puis mettre à jour l'affichage
         boolean hit = super.recoitTir(c);
         if (hit) {
             gg.colorie(c, Color.RED);
@@ -50,15 +53,16 @@ public class GrilleNavaleGraphique extends GrilleNavale {
     }
 
     /**
-     * Indique si un navire est coulé à la coordonnée donnée.  Permet de
-     * différencier l'affichage dans l'interface utilisateur.
+     * Indique si un navire est coulé à la coordonnée donnée (utile pour
+     * adapter l'affichage ou déclencher une animation). Retourne vrai si
+     * la coordonnée appartient à un navire désormais coulé.
      */
     public boolean estCoule(Coordonnee c) {
         return super.estCoule(c);
     }
 
     /**
-     * Indique si une coordonnée est à l'eau (aucun navire ne l'occupe).
+     * Indique si une coordonnée est de l'eau (aucun navire ne l'occupe).
      */
     public boolean estALEau(Coordonnee c) {
         return super.estALEau(c);

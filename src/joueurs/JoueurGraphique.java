@@ -11,11 +11,10 @@ import interfacegraphique.GrilleNavaleGraphique;
 import logique.Coordonnee;
 
 /**
- * Implémentation d'un joueur humain avec interface graphique.  Le joueur
- * dispose de deux grilles : une pour suivre ses propres navires et une
- * autre pour suivre ses attaques sur l'adversaire.  Les actions de
- * l'adversaire et les résultats des attaques sont signalés via des
- * boîtes de dialogue.
+ * Implémentation d'un joueur humain avec interface graphique. Le joueur
+ * dispose de deux grilles : une pour ses navires et une autre pour suivre
+ * ses attaques contre l'adversaire. Les actions de l'adversaire et les
+ * résultats d'attaque sont signalés via des boîtes de dialogue.
  */
 public class JoueurGraphique extends Joueur {
     private final GrilleNavaleGraphique gng;
@@ -46,7 +45,7 @@ public class JoueurGraphique extends Joueur {
                 break;
             case GAMEOVER:
                 gg.colorie(c, Color.RED);
-                JOptionPane.showMessageDialog(gg, "PARTIE TERMINÉE ! Vous avez gagné !");
+                JOptionPane.showMessageDialog(gg, "PARTIE TERMINÉE ! Vous avez gagné !");
                 break;
         }
     }
@@ -64,7 +63,7 @@ public class JoueurGraphique extends Joueur {
                 JOptionPane.showMessageDialog(gng.getGrilleGraphique(), "L'attaque a manqué en " + c);
                 break;
             case GAMEOVER:
-                JOptionPane.showMessageDialog(gng.getGrilleGraphique(), "PARTIE TERMINÉE ! Vous avez perdu.");
+                JOptionPane.showMessageDialog(gng.getGrilleGraphique(), "PARTIE TERMINÉE ! Vous avez perdu.");
                 break;
         }
     }

@@ -13,12 +13,30 @@ import logique.GrilleNavale;
 import logique.Navire;
 
 /**
- * MonteCarlo heuristic: generate many random full placements consistent with
- * observed information (known hits in `currentHits`, and fired-but-not-hit
- * cells inferred from `tirsEnvoyes`) and return the unfired cell with the
- * highest number of occurrences across samples.
+ * Heuristique Monte Carlo pour la sélection d'un tir.
  *
- * Usage: new MonteCarlo(nSamples).choisir(tirsEnvoyes, gng, naviresRestants, currentHits)
+ * Description :
+ * Cette heuristique génère un grand nombre d'échantillons (placements complets
+ * de la flotte) compatibles avec les informations observées :
+ * - les coordonnées connues comme "touchées" (`currentHits`) doivent être
+ *   couvertes par un navire dans l'échantillon ;
+ * - les cases déjà tirées et identifiées comme "manquées" (déduites de
+ *   `tirsEnvoyes` moins `currentHits`) ne doivent pas contenir de navire.
+ *
+ * Pour chaque échantillon valide, la méthode incrémente un compteur pour
+ * chaque case occupée par un navire. Après avoir produit `samples` échantillons
+ * acceptés (ou tenté `samples` itérations), l'algorithme choisit la case
+ * non encore tirée qui a été la plus fréquemment occupée dans les échantillons.
+ * En cas d'égalité, une case est sélectionnée aléatoirement parmi les meilleures.
+ *
+ * Comportements complémentaires :
+ * - Si la liste `naviresRestants` est vide, l'heuristique retombe sur une
+ *   stratégie uniforme (fonction `Uniform`).
+ * - L'algorithme randomise l'ordre de placement des navires pour diversifier
+ *   les échantillons.
+ *
+ * Usage recommandé : ajuster `samples` pour un compromis qualité/temps (valeur
+ * par défaut : 1000).
  */
 public class MonteCarlo implements Heuristic {
     private final Random rng = new Random();
@@ -33,11 +51,24 @@ public class MonteCarlo implements Heuristic {
     }
 
     @Override
+    /**
+     * Construire et évaluer `samples` placements aléatoires cohérents, puis
+     * retourner la meilleure coordonnée non tirée.
+     *
+     * Paramètres :
+     * - `tirsEnvoyes` : matrice (N x N) indiquant les cases déjà tirées.
+     * - `gng` : grille graphique (utilisée ici pour récupérer la taille N).
+     * - `naviresRestants` : longueurs des navires encore présents.
+     * - `currentHits` : coordonnées des impacts détectés (touchés mais pas coulés).
+     *
+     * Retour : la `Coordonnee` cible choisie, ou une alternative (Uniform)
+     * si aucune case pertinente n'est trouvée.
+     */
     public Coordonnee choisir(boolean[][] tirsEnvoyes, GrilleNavaleGraphique gng, List<Integer> naviresRestants,
             List<Coordonnee> currentHits) {
         int N = gng.getTaille();
         if (naviresRestants == null || naviresRestants.isEmpty()) {
-            // fallback to uniform if no ship information
+            // repli sur uniforme si aucune information sur les navires
             return new Uniform().choisir(tirsEnvoyes, gng, naviresRestants, currentHits);
         }
 
@@ -55,32 +86,38 @@ public class MonteCarlo implements Heuristic {
             }
         }
 
+        // Compteurs d'occupation : pour chaque échantillon valide, on incrémente
+        // les cases occupées par un navire.
         int[][] counts = new int[N][N];
         int[] sizes = naviresRestants.stream().mapToInt(Integer::intValue).toArray();
 
         for (int s = 0; s < samples; s++) {
+            // Construire un placement d'essai : placer chaque navire aléatoirement
+            // parmi les options valides (sans chevauchement des tirs manqués).
             GrilleNavale sample = new GrilleNavale(N);
             boolean ok = true;
 
-            // randomize ship order to diversify samples
+            // Randomiser l'ordre des longueurs pour diversifier les configurations
             List<Integer> sizesList = new ArrayList<>();
             for (int L : sizes) sizesList.add(L);
             Collections.shuffle(sizesList, rng);
 
             for (int L : sizesList) {
-                // generate all possible placements for this ship given current sample state
+                // Lister toutes les positions valides pour ce navire dans l'échantillon
                 List<Navire> options = new ArrayList<>();
+                // positions horizontales
                 for (int r = 0; r < N; r++) {
                     for (int c = 0; c + L - 1 < N; c++) {
                         Navire n = new Navire(new Coordonnee(r, c), L, false);
                         if (sample.ajouteNavire(n)) {
-                            // ajout temporaire succeeded — but ajouteNavire mutated sample; undo by removing
+                            // retire l'ajout temporaire pour restaurer l'état
                             sample.getNavires().remove(n);
-                            // check not overlapping fired misses
+                            // ignorer placements qui toucheraient des "miss"
                             if (!placementTouchesAny(n, firedMisses)) options.add(n);
                         }
                     }
                 }
+                // positions verticales
                 for (int r = 0; r + L - 1 < N; r++) {
                     for (int c = 0; c < N; c++) {
                         Navire n = new Navire(new Coordonnee(r, c), L, true);
@@ -92,7 +129,7 @@ public class MonteCarlo implements Heuristic {
                 }
 
                 if (options.isEmpty()) { ok = false; break; }
-                // pick a random placement among options and commit it
+                // choisir un placement au hasard parmi les options et le fixer
                 Navire choice = options.get(rng.nextInt(options.size()));
                 boolean placed = sample.ajouteNavire(choice);
                 if (!placed) { ok = false; break; }
@@ -116,7 +153,8 @@ public class MonteCarlo implements Heuristic {
             }
             if (violatesMiss) continue;
 
-            // accept sample: increment counts for every ship cell
+            // Echantillon accepté : incrémenter les compteurs pour chaque case
+            // occupée par un navire dans cet échantillon.
             for (Navire n : sample.getNavires()) {
                 for (Coordonnee cc : segmentOf(n)) counts[cc.getLigne()][cc.getColonne()]++;
             }

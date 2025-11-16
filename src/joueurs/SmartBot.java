@@ -14,29 +14,33 @@ import interfacegraphique.GrilleNavaleGraphique;
 import logique.Coordonnee;
 
 /**
- * SmartBot : bot combinant deux approches :
- * - Hunt & Target : si on touche, on explore U, D, L, R pour confirmer l'axe,
- *   puis on tire en ligne droite jusqu’à COULE ; si A_L_EAU, on repart
- *   dans le sens opposé.
- * - Probabilité (heatmap) : quand pas de cible prioritaire, on calcule une
- *   carte de placements restants et on tire sur la case la plus probable.
+ * SmartBot : bot combinant deux approches principales :
  *
- * Règle proba demandée : invalider toute case déjà tirée (à l’eau ou partie d’un navire coulé).
+ * <ul>
+ * <li>Hunt & Target : lorsqu'un hit est détecté, explorer Haut/Bas/Gauche/Droite
+ *     pour confirmer l'axe, puis tirer le long de l'axe confirmé jusqu'à ce
+ *     que le navire soit coulé ; en cas de miss, tester la direction opposée.</li>
+ * <li>Probabilités (heatmap) : quand il n'y a pas de cible active, estimer
+ *     les placements restants et tirer sur la case la plus probable.</li>
+ * </ul>
+ *
+ * La heuristique probabiliste exclut toute case déjà tirée (miss ou case
+ * faisant partie d'un navire coulé).
  */
 public class SmartBot extends Bot {
     private final Deque<Coordonnee> cibles = new ArrayDeque<>();
     private Heuristic heuristic;
 
-    // Données pour la stratégie de probabilité
+    // Données pour la stratégie probabiliste
     private final int N;
-    private final boolean[][] toucheNonCoule; // touches connues mais pas encore coulées
+    private final boolean[][] toucheNonCoule; // touches connues mais pas encore marquées comme coulées
     private final List<Integer> naviresRestants;
 
     // État pour le mode 'target' (hunt -> target)
     private Coordonnee targetStart = null; // borne min connue (ligne/colonne)
     private Coordonnee targetEnd = null;
     private Coordonnee previous = null;
-    private Coordonnee direction = null; // direction confirmée (dr,dc)
+    private Coordonnee direction = null; // direction confirmée (dr, dc)
     
 
     // flags et variables auxiliaires pour la stratégie hunt
@@ -52,14 +56,14 @@ public class SmartBot extends Bot {
     }
 
     /**
-     * Constructeur with heuristic name (optional).
+     * Constructeur avec nom d'heuristique (optionnel).
      */
     public SmartBot(GrilleNavaleGraphique gng, String heuristicName) {
         this(gng);
         initHeuristic(heuristicName);
     }
 
-    /** Constructeur principal : on fournit les longueurs des navires. */
+    /** Constructeur principal : fournir les longueurs des navires. */
     public SmartBot(GrilleNavaleGraphique gng, List<Integer> longueursInitiales) {
         super(gng);
         this.N = gng.getTaille();
@@ -69,7 +73,7 @@ public class SmartBot extends Bot {
     }
 
     /**
-     * Constructeur with explicit ship lengths and heuristic name.
+     * Constructeur avec longueurs explicites et nom d'heuristique.
      */
     public SmartBot(GrilleNavaleGraphique gng, List<Integer> longueursInitiales, String heuristicName) {
         this(gng, longueursInitiales);
@@ -114,13 +118,13 @@ public class SmartBot extends Bot {
                 }
                 previous = c;
             }
-            // largeur removed: use computeCurrentClusterLength() on demand
+            // largeur retirée : utiliser computeCurrentClusterLength() à la demande
             updateTargetBoundsAndDirectionFromHits();
 
-            // If an axis/direction is known, prefer shooting along that axis only.
-            // Otherwise enqueue U/D/L/R to discover the axis.
+            // Si un axe/direction est connu, préférer tirer le long de cet axe.
+            // Sinon, empiler Haut/Bas/Gauche/Droite pour découvrir l'axe.
             if (dirR != 0 || dirC != 0) {
-                // set preferForward according to the tentative direction if available
+                // définir preferForward selon la direction tentative si disponible
                 if (direction != null) {
                     int signR = Integer.signum(direction.getLigne());
                     int signC = Integer.signum(direction.getColonne());
@@ -139,7 +143,7 @@ public class SmartBot extends Bot {
             removeShipLength(len);
             // purge du cluster
             clearClusterAround(c);
-            // clear target state and queued neighbors so we return to heuristic mode
+            // vider l'état de cible et la file de voisins pour revenir au mode heuristique
             clearCurrentTargetState();
             cibles.clear();
 
@@ -169,9 +173,8 @@ public class SmartBot extends Bot {
         Coordonnee huntTarget = hunt();
         if (huntTarget != null) return huntTarget;
 
-        // 2) Sinon : utiliser la heuristique configurée (SmartBot itself no longer
-        // contains an internal heatmap). If heuristic is null or returns null,
-        // fall back to a uniform choice.
+        // 2) Sinon : utiliser l'heuristique configurée. Si elle est absente ou
+        // ne retourne rien, revenir à un choix uniforme.
         Coordonnee choix = null;
         if (heuristic != null) {
             choix = heuristic.choisir(tirsEnvoyes, gng, naviresRestants, currentHits);
@@ -185,14 +188,14 @@ public class SmartBot extends Bot {
 
     /* ===================== HUNT ===================== */
     private Coordonnee hunt() {
-        // Nothing to hunt
+        // Aucune cible en cours
         if (currentHits.isEmpty())
             return null;
 
-        // Ensure bounds and axis are up-to-date
+        // Mettre à jour bornes et axe à partir des touches connues
         updateTargetBoundsAndDirectionFromHits();
 
-        // If axis is confirmed, try forward then backward along the axis
+        // Si l'axe est confirmé, tenter d'abord l'avant puis l'arrière le long de l'axe
         if ((dirR != 0 || dirC != 0) && targetStart != null && targetEnd != null) {
             if (preferForward && !triedForward) {
                 Coordonnee f = forwardCandidate();
@@ -214,20 +217,20 @@ public class SmartBot extends Bot {
                 preferForward = true;
             }
 
-            // If both sides blocked, try any unfired neighbor around the cluster
+            // Si les deux côtés sont bloqués, essayer un voisin non tiré autour du cluster
             Coordonnee around = findUnfiredNeighborAroundCluster();
             if (around != null) {
                 tirsEnvoyes[around.getLigne()][around.getColonne()] = true;
                 return around;
             }
 
-            // Nothing usable — abandon this target
+            // Rien d'utilisable — abandonner cette cible
             clearCurrentTargetState();
             cibles.clear();
             return null;
         }
 
-        // No confirmed axis: consume queued U/D/L/R neighbors first
+        // Axe non confirmé : consommer d'abord la file Haut/Bas/Gauche/Droite
         while (!cibles.isEmpty()) {
             Coordonnee next = cibles.removeFirst();
             if (isValidUnfired(next)) {
@@ -236,7 +239,7 @@ public class SmartBot extends Bot {
             }
         }
 
-        // If queue is empty, populate it with neighbors around the cluster (UDLR for each hit)
+        // Si la file est vide, la remplir avec les voisins autour du cluster (H/B/G/D pour chaque hit)
         for (Coordonnee h : currentHits) {
             ajouterVoisinsOrdreUDLR(h);
         }
@@ -249,20 +252,20 @@ public class SmartBot extends Bot {
             }
         }
 
-        // Nothing to do — clear state and let probability layer take over
+        // Rien à faire — vider l'état et laisser la couche probabiliste gérer
         clearCurrentTargetState();
         cibles.clear();
         return null;
     }
 
-    /* Heatmap removed: SmartBot delegates non-hunt choices to a Heuristic. */
+    /* La heatmap interne a été retirée : SmartBot délègue les choix hors-hunt à une Heuristic. */
 
     /* ===================== Utilitaires communs ===================== */
     private boolean in(int r, int c) {
         return r >= 0 && r < N && c >= 0 && c < N;
     }
 
-    // U, D, L, R en file (sans doublon / déjà tiré)
+    // Enfile Haut, Bas, Gauche, Droite (sans doublons / ignorer cases déjà tirées)
     private void ajouterVoisinsOrdreUDLR(Coordonnee c) {
         int r = c.getLigne(), col = c.getColonne();
         Coordonnee up = new Coordonnee(r - 1, col);
@@ -280,7 +283,7 @@ public class SmartBot extends Bot {
     }
 
     /**
-     * Enqueue only the neighbours along the confirmed axis (no perpendicular tries).
+     * Enfile uniquement les voisins le long de l'axe confirmé (pas d'essais perpendiculaires).
      */
     private void ajouterVoisinsSelonAxe(Coordonnee c) {
         if (c == null) return;
@@ -424,7 +427,7 @@ public class SmartBot extends Bot {
         }
     }
 
-    /* ===================== Aide direction ===================== */
+    /* ===================== Direction helpers ===================== */
     private Coordonnee forwardCandidate() {
         if (targetEnd == null)
             return null;
@@ -441,7 +444,7 @@ public class SmartBot extends Bot {
         return c != null && in(c.getLigne(), c.getColonne()) && !tirsEnvoyes[c.getLigne()][c.getColonne()];
     }
 
-    // small Coordonnee arithmetic helpers
+    // petites fonctions utilitaires pour l'arithmétique de Coordonnee
    
 
     private Coordonnee sub(Coordonnee a, Coordonnee b) {

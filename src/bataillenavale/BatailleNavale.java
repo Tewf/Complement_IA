@@ -1,9 +1,13 @@
 package bataillenavale;
 
 import java.awt.GridLayout;
+import java.awt.BorderLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -14,42 +18,87 @@ import joueurs.JoueurGraphique;
 import joueurs.SmartBot;
 
 /**
- * Classe de lancement pour le jeu de bataille navale.  Le jeu peut se
- * dérouler à deux joueurs humains ou opposer un joueur humain à un
- * bot (aléatoire ou intelligent).  La taille de la grille ainsi que
- * la configuration de la flotte peuvent être paramétrées via les
- * arguments de la ligne de commande.
+ * Classe utilitaire et point d'entrée pour le jeu de Bataille Navale.
+ *
+ * L'application supporte le jeu humain vs humain et humain vs bot. La taille
+ * de la grille et la flotte par défaut peuvent être ajustées via les
+ * arguments de la ligne de commande. Cette classe fournit également des
+ * méthodes de commodité pour initialiser les fenêtres graphiques, les
+ * joueurs humains et les bots.
  */
 public class BatailleNavale {
-    /** taille par défaut de la grille */
+    /** Taille par défaut de la grille. */
     private static final int DEFAULT_TAILLE = 10;
-    /** flotte par défaut : longueurs des navires */
+    /** Flotte par défaut : longueurs des navires. */
     private static final int[] DEFAULT_FLOTTE = {5, 4, 3, 3, 2, 2};
 
     /**
-     * Initialise et affiche la fenêtre pour un joueur humain.  Deux
-     * grilles graphiques sont placées côte à côte : celle des tirs et
-     * celle des navires du joueur.
+     * Initialise et affiche la fenêtre principale pour un joueur humain.
+     * Deux composants de grille sont placés côte à côte : la grille d'attaque
+     * et la grille du joueur.
      */
     public static void initFenetre(final String titreFenetre, final GrilleGraphique grilleTir, final GrilleGraphique grilleJeu) {
         SwingUtilities.invokeLater(() -> {
             JFrame fenetre = new JFrame(titreFenetre);
             fenetre.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            fenetre.getContentPane().setLayout(new GridLayout(1, 2));
+            // panneau principal : grille de tirs + panneau droit (contrôles + grille de jeu)
+            JPanel principal = new JPanel(new GridLayout(1, 2));
+
+            // panneau droit : conteneur pour les contrôles et la grille de jeu
+            JPanel droite = new JPanel(new java.awt.BorderLayout());
+
+            // zone de contrôles en haut : checkbox pour afficher/masquer la grille
+            JCheckBox voirGrille = new JCheckBox("Voir ma grille");
+            voirGrille.setToolTipText("Cochez pour afficher votre grille de jeu. Par défaut la grille est masquée pour empêcher l'adversaire de voir vos navires.");
+            JButton reveal3s = new JButton("Révéler 3s");
+
+            // créer un petit panneau de contrôles
+            JPanel controles = new JPanel(new GridLayout(1, 2));
+            controles.add(voirGrille);
+            controles.add(reveal3s);
+
+            // conteneur pour la grille du joueur afin de pouvoir la masquer facilement
+            JPanel containerJeu = new JPanel(new BorderLayout());
+            containerJeu.add(grilleJeu, java.awt.BorderLayout.CENTER);
+
+            // config visuelle
             grilleTir.setBorder(BorderFactory.createTitledBorder("Grille de tirs"));
-            grilleJeu.setBorder(BorderFactory.createTitledBorder("Grille de jeu"));
-            // on empêche l'utilisateur de cliquer sur sa propre grille
+            containerJeu.setBorder(BorderFactory.createTitledBorder("Grille de jeu"));
+
+            // par défaut, masquer la grille de jeu (empêche de voir les positions adverses)
+            containerJeu.setVisible(false);
+
+            // empêcher les clics sur la propre grille du joueur (la sélection d'attaque se fait via la grille de tirs)
             grilleJeu.setClicActive(false);
-            fenetre.getContentPane().add(grilleTir);
-            fenetre.getContentPane().add(grilleJeu);
+
+            // actions pour les contrôles
+            voirGrille.addActionListener(e -> containerJeu.setVisible(voirGrille.isSelected()));
+
+            reveal3s.addActionListener(e -> {
+                // afficher temporairement 3 secondes
+                containerJeu.setVisible(true);
+                // démarrer un Timer Swing pour restaurer l'état
+                new javax.swing.Timer(3000, ev -> {
+                    containerJeu.setVisible(voirGrille.isSelected());
+                    ((javax.swing.Timer) ev.getSource()).stop();
+                }).start();
+            });
+
+            // assembly
+            principal.add(grilleTir);
+            droite.add(controles, java.awt.BorderLayout.NORTH);
+            droite.add(containerJeu, java.awt.BorderLayout.CENTER);
+            principal.add(droite);
+
+            fenetre.getContentPane().add(principal);
             fenetre.pack();
             fenetre.setVisible(true);
         });
     }
 
     /**
-     * Initialise un joueur humain avec son interface graphique et
-     * positionne automatiquement ses navires.
+     * Initialise un joueur humain avec une interface graphique et un placement
+     * automatique des navires.
      */
     public static JoueurGraphique initJoueur(String nomJoueur, int taille, int[] flotte) {
         GrilleGraphique grilleAttaque = new GrilleGraphique(taille);
@@ -60,8 +109,8 @@ public class BatailleNavale {
     }
 
     /**
-     * Initialise un bot intelligent ou aléatoire.  Ses navires sont
-     * placés automatiquement.  Aucun affichage n'est réalisé pour le bot.
+     * Initialise un bot (intelligent ou uniforme). Les navires sont placés
+     * automatiquement. Aucune interface graphique n'est créée pour les bots.
      */
     public static Bot initBot(int taille, int[] flotte, boolean intelligent) {
         // kept for backward compatibility: delegate to string-based init
@@ -69,7 +118,8 @@ public class BatailleNavale {
     }
 
     /**
-     * Initialise a bot given a type string: "uniform", "markov", "montecarlo", or "smart".
+     * Initialise un bot à partir d'une étiquette de type : "uniform", "markov",
+     * "montecarlo" ou "smart".
      */
     public static Bot initBot(int taille, int[] flotte, String botType) {
         GrilleNavaleGraphique grilleBot = new GrilleNavaleGraphique(taille);
@@ -91,13 +141,13 @@ public class BatailleNavale {
     }
 
     /**
-     * Point d'entrée principal.  Les arguments permettent de choisir le
-     * mode de jeu et la taille de la grille :
+     * Point d'entrée principal. Les arguments de la ligne de commande permettent
+     * de choisir le mode de jeu et la taille de la grille. Exemples :
      * <pre>
-     *   java fr.uga.miashs.inff3.bataillenavale.BatailleNavale         # 2 joueurs humains
-     *   java fr.uga.miashs.inff3.bataillenavale.BatailleNavale 12      # 2 joueurs sur une grille 12×12
-     *   java fr.uga.miashs.inff3.bataillenavale.BatailleNavale bot     # humain vs. bot intelligent
-     *   java fr.uga.miashs.inff3.bataillenavale.BatailleNavale bot 8   # humain vs. bot sur une grille 8×8
+     *   java bataillenavale.BatailleNavale         # deux joueurs humains
+     *   java bataillenavale.BatailleNavale 12      # deux humains sur une grille 12x12
+     *   java bataillenavale.BatailleNavale bot     # humain vs bot intelligent
+     *   java bataillenavale.BatailleNavale bot 8   # humain vs bot sur une grille 8x8
      * </pre>
      */
     public static void main(String[] args) {
@@ -123,7 +173,7 @@ public class BatailleNavale {
                 }
             }
         }
-        // adapter la flotte si la grille est trop petite
+        // adapter la flotte si la grille choisie est trop petite
         flotte = adapteFlottePourTaille(flotte, taille);
         if (vsBot) {
             JoueurGraphique joueur = initJoueur("Joueur", taille, flotte);
@@ -137,16 +187,15 @@ public class BatailleNavale {
     }
 
     /**
-     * Adapte un tableau de longueurs de navires pour une taille de grille
-     * donnée.  Si certains navires sont trop longs pour tenir dans la
-     * grille, ils sont supprimés.  Il est préférable de conserver un
-     * minimum de navires pour que le jeu reste intéressant.
+     * Adapte un tableau de longueurs de navires à une taille de grille
+     * donnée. Les navires dont la longueur dépasse la taille de la grille
+     * sont supprimés du tableau retourné.
      */
     private static int[] adapteFlottePourTaille(int[] base, int taille) {
         int count = 0;
         for (int l : base) {
             if (l <= taille) {
-				count++;
+			count++;
 			}
         }
         int[] result = new int[count];

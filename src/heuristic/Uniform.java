@@ -8,7 +8,7 @@ import interfacegraphique.GrilleNavaleGraphique;
 import logique.Coordonnee;
 
 /**
- * Uniform heuristic: pick uniformly at random among unfired cells.
+ * Heuristique uniforme : choisir au hasard uniformément parmi les cases non tirées.
  */
 public class Uniform implements Heuristic {
     private final Random rng = new Random();

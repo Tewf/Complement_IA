@@ -3,16 +3,15 @@ package joueurs;
 import logique.Coordonnee;
 
 /**
- * Classe abstraite représentant un joueur.  Chaque joueur possède sa
- * propre grille et peut choisir ses attaques et se défendre face aux
- * attaques adverses.  L'algorithme de déroulement du jeu est implémenté
- * dans {@link #jouerAvec(Joueur)} et se base sur les codes de retour
- * suivants :
+ * Classe abstraite représentant un joueur. Chaque joueur possède une
+ * grille et peut choisir des attaques ainsi que défendre sa grille. La
+ * boucle de jeu est implémentée dans {@link #jouerAvec(Joueur)} et s'appuie
+ * sur les codes de retour suivants :
  * <ul>
- *   <li>{@code TOUCHE} : un navire a été touché mais pas coulé.</li>
- *   <li>{@code COULE} : un navire a été coulé mais il reste d'autres navires.</li>
- *   <li>{@code A_L_EAU} : l'attaque a manqué toutes les cibles.</li>
- *   <li>{@code GAMEOVER} : tous les navires du défenseur sont coulés.</li>
+ *   <li>{@code TOUCHE} : un navire a été touché mais pas coulé.</li>
+ *   <li>{@code COULE} : un navire a été coulé mais d'autres navires restent.</li>
+ *   <li>{@code A_L_EAU} : l'attaque a manqué (à l'eau).</li>
+ *   <li>{@code GAMEOVER} : tous les navires du défenseur sont coulés.</li>
  * </ul>
  */
 public abstract class Joueur {
@@ -33,12 +32,12 @@ public abstract class Joueur {
     }
 
     /**
-     * Déroulement d'une partie entre ce joueur et son adversaire.  Les tours
-     * s'enchaînent jusqu'à ce qu'un joueur n'ait plus de navires.  Cette
-     * méthode gère le passage de témoin entre les deux joueurs et retourne
-     * le joueur vainqueur (celui qui a provoqué l'état {@code GAMEOVER}).
+     * Déroule une partie entre ce joueur et l'adversaire fourni. Les tours
+     * s'alternent jusqu'à ce qu'un joueur n'ait plus de navires. La méthode
+     * gère le passage de témoin et retourne un {@link MatchResult}
+     * décrivant le vainqueur et les statistiques de la partie.
      *
-     * @return le joueur gagnant
+     * @return résultat du match avec le vainqueur et les compteurs
      */
     public MatchResult jouerAvec(Joueur adversaire) {
         if (this.adversaire != null || adversaire.adversaire != null) {
@@ -49,8 +48,8 @@ public abstract class Joueur {
         Joueur current = this;
         Joueur lastAttacker = null;
         int res;
-        int movesA = 0; // attacks performed by `this`
-        int movesB = 0; // attacks performed by `adversaire`
+        int movesA = 0; // attaques effectuées par `this`
+        int movesB = 0; // attaques effectuées par `adversaire`
         boolean isAturn = true;
         do {
             lastAttacker = current;
@@ -64,7 +63,7 @@ public abstract class Joueur {
             current = (current == this) ? adversaire : this;
             isAturn = !isAturn;
         } while (res != GAMEOVER);
-        // cleanup lien entre joueurs
+        // nettoyage des liens entre joueurs
         this.adversaire = null;
         adversaire.adversaire = null;
         int total = movesA + movesB;
@@ -73,24 +72,24 @@ public abstract class Joueur {
     }
 
     /**
-     * Méthodes à implémenter dans les classes concrètes pour gérer la
-     * réception des différents états après une attaque.
+     * Méthodes à implémenter dans les classes concrètes pour traiter les
+     * retours suite à une attaque.
      */
     protected abstract void retourAttaque(Coordonnee c, int etat);
 
     /**
-     * Méthodes à implémenter pour gérer les réactions après une défense.
+     * Méthodes à implémenter pour gérer les retours après défense.
      */
     protected abstract void retourDefense(Coordonnee c, int etat);
 
     /**
-     * Choisit une coordonnée à attaquer.  Pour les joueurs humains, cette
-     * méthode bloque jusqu'à ce qu'un clic soit effectué sur la grille.
+     * Choisit une coordonnée à attaquer. Pour les joueurs humains, cette
+     * méthode peut bloquer en attendant un clic utilisateur.
      */
     public abstract Coordonnee choisirAttaque();
 
     /**
-     * Défend la grille contre une attaque.  Doit retourner l'un des codes
+     * Défend la grille contre une attaque. Doit retourner l'un des codes
      * définis dans cette classe.
      */
     public abstract int defendre(Coordonnee c);

@@ -4,10 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Représente un navire sur la grille.  Un navire est défini par ses
- * coordonnées de début et de fin ainsi qu'un ensemble de coordonnées
- * indiquant les parties déjà touchées.  Les navires peuvent être
- * horizontaux ou verticaux et ne peuvent pas être obliques.
+ * Représente un navire sur la grille. Un navire est défini par ses coordonnées
+ * de début et de fin ainsi que par l'ensemble des cases déjà touchées.
+ * Les navires sont horizontaux ou verticaux (aucune diagonale).
  */
 public class Navire {
 
@@ -17,11 +16,11 @@ public class Navire {
     private final Set<Coordonnee> partiesTouchees;
 
     /**
-     * Crée un navire donné sa coordonnée de départ, sa longueur et
-     * son orientation.
+     * Crée un navire à partir d'une coordonnée de départ, d'une longueur et
+     * d'une orientation.
      *
-     * @param debut       la coordonnée de départ (0 basée)
-     * @param longueur    la longueur du navire (nombre de cases)
+     * @param debut       coordonnée de départ (indexée à 0)
+     * @param longueur    longueur du navire (nombre de cases)
      * @param estVertical vrai si le navire est vertical, faux s'il est horizontal
      */
     public Navire(Coordonnee debut, int longueur, boolean estVertical) {
@@ -44,8 +43,8 @@ public class Navire {
     }
 
     /**
-     * Retourne vrai si la coordonnée donnée se trouve sur le navire (qu'elle
-     * ait été touchée ou non).
+     * Retourne vrai si la coordonnée donnée se situe sur ce navire (touchée
+     * ou non).
      */
     public boolean contient(Coordonnee c) {
         return c.getLigne() >= debut.getLigne() && c.getLigne() <= fin.getLigne()
@@ -53,8 +52,8 @@ public class Navire {
     }
 
     /**
-     * Retourne vrai si ce navire chevauche un autre navire (i.e. qu'ils
-     * occupent au moins une case commune).
+     * Retourne vrai si ce navire chevauche un autre navire (partage au moins
+     * une case).
      */
     public boolean chevauche(Navire n) {
         return intersectionNonVide(debut.getLigne(), fin.getLigne(), n.debut.getLigne(), n.fin.getLigne())
@@ -62,8 +61,8 @@ public class Navire {
     }
 
     /**
-     * Retourne vrai si ce navire touche un autre navire sans chevaucher
-     * (c'est‑à‑dire s'ils sont adjacents horizontalement ou verticalement).
+     * Retourne vrai si ce navire touche un autre navire sans chevauchement
+     * (adjacence horizontale ou verticale).
      */
     public boolean touche(Navire n) {
         boolean toucheHorizontalement = intersectionNonVide(debut.getLigne(), fin.getLigne(), n.debut.getLigne(), n.fin.getLigne())
@@ -74,17 +73,16 @@ public class Navire {
     }
 
     /**
-     * Retourne vrai si une des parties du navire à la coordonnée donnée a déjà
-     * été touchée.
+     * Retourne vrai si le navire a été touché à la coordonnée donnée.
      */
     public boolean estTouche(Coordonnee c) {
         return partiesTouchees.contains(c);
     }
 
     /**
-     * Applique un tir sur la coordonnée donnée.  Retourne vrai si le tir
-     * touche effectivement le navire (et n'avait pas déjà été enregistré),
-     * faux sinon.  Les tirs en double sur une case déjà touchée sont ignorés.
+     * Applique un tir à la coordonnée donnée. Retourne vrai si le tir touche
+     * le navire et n'avait pas déjà été enregistré. Les tirs doublons sont
+     * ignorés.
      */
     public boolean recoitTir(Coordonnee c) {
         if (contient(c) && !estTouche(c)) {
@@ -102,15 +100,15 @@ public class Navire {
     }
 
     /**
-     * Indique si toutes les parties du navire ont été touchées (coulé).
+     * Indique si toutes les parties du navire ont été touchées (navire coulé).
      */
     public boolean estCoule() {
         return partiesTouchees.size() == longueur;
     }
 
     /**
-     * Calcule une distance simple entre le début et la fin du navire.  Cette
-     * méthode est principalement utilisée dans les tests unitaires.
+     * Calcule une distance euclidienne simple entre le début et la fin du
+     * navire. Principalement utilisée pour des tests unitaires.
      */
     public double distance() {
         return Math.hypot(fin.getLigne() - debut.getLigne(), fin.getColonne() - debut.getColonne());

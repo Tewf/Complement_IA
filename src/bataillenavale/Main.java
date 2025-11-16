@@ -13,26 +13,27 @@ import joueurs.Bot;
 import joueurs.JoueurGraphique;
 
 /**
- * Small launcher UI to configure the grid size and choose game mode
- * (Human vs Human or Human vs Smart Bot) before starting a game.
+ * Interface de lancement pour configurer la taille de la grille et
+ * choisir le mode de jeu (Humain vs Humain ou Humain vs Ordinateur)
+ * avant de démarrer une partie.
  */
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             JTextField tailleField = new JTextField(String.valueOf(10));
-            String[] opponents = {"Human", "Bot (Uniform)", "Bot (Markov)", "Bot (MonteCarlo)"};
+            String[] opponents = {"Humain", "Ordinateur (Uniforme)", "Ordinateur (Markov)", "Ordinateur (MonteCarlo)"};
             JComboBox<String> opponentCombo = new JComboBox<>(opponents);
 
             JPanel panel = new JPanel(new GridLayout(0, 1));
-            panel.add(new JLabel("Grid size (integer):"));
+            panel.add(new JLabel("Taille de la grille (entier) :"));
             panel.add(tailleField);
-            panel.add(new JLabel("Opponent:"));
+            panel.add(new JLabel("Adversaire :"));
             panel.add(opponentCombo);
 
             int res = JOptionPane.showConfirmDialog(null, panel, "Bataille Navale - Configuration",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
             if (res != JOptionPane.OK_OPTION) {
-                return; // cancelled
+                return; // annulé
             }
 
             int taille = 10;
@@ -40,34 +41,34 @@ public class Main {
                 taille = Integer.parseInt(tailleField.getText().trim());
                 if (taille < 2) taille = 2;
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Invalid size, using default 10.");
+                JOptionPane.showMessageDialog(null, "Taille invalide, utilisation de la valeur par défaut : 10.");
                 taille = 10;
             }
 
             String opponent = opponentCombo.getSelectedItem().toString();
-            boolean vsBot = !opponent.equalsIgnoreCase("Human");
+            boolean vsBot = !opponent.equalsIgnoreCase("Humain");
             final int[] flotte = {5, 4, 3, 3, 2, 2};
 
-            // Adapt the fleet to the chosen grid size: remove ships longer than the grid
+            // Adapter la flotte à la taille choisie : supprimer les navires plus longs que la grille
             int count = 0;
             for (int l : flotte) if (l <= taille) count++;
             if (count == 0) {
-                // No ship fits: offer to increase the grid to the largest ship length or cancel
+                // Aucun navire ne tient : proposer d'augmenter la grille à la plus grande longueur ou annuler
                 int maxLen = 0;
                 for (int l : flotte) if (l > maxLen) maxLen = l;
                 int choice = JOptionPane.showConfirmDialog(null,
-                        "No ships can fit in a " + taille + "x" + taille + " grid.\n" +
-                                "Increase grid to " + maxLen + "x" + maxLen + " so default fleet can be used?",
-                        "Grid too small", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+                    "Aucun navire ne peut tenir dans une grille de " + taille + "x" + taille + ".\n" +
+                        "Augmenter la taille de la grille à " + maxLen + "x" + maxLen + " pour utiliser la flotte par défaut ?",
+                    "Grille trop petite", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (choice != JOptionPane.OK_OPTION) {
-                    JOptionPane.showMessageDialog(null, "Aborting: choose a larger grid next time.");
+                    JOptionPane.showMessageDialog(null, "Abandon : choisissez une grille plus grande la prochaine fois.");
                     return;
                 }
                 taille = maxLen;
                 count = flotte.length;
             }
 
-            // Build an adapted fleet array containing only ships that fit the chosen grid size
+            // Construire un tableau de flotte adapté contenant uniquement les navires qui tiennent
             int[] flotteAdapted = new int[count];
             int idx = 0;
             for (int l : flotte) {
@@ -76,20 +77,20 @@ public class Main {
                 }
             }
 
-            // make local copies that are effectively final for use in the game thread
+            // Faire des copies locales effectivement finales pour le thread de jeu
             final int tailleFinal = taille;
             final boolean vsBotFinal = vsBot;
             final int[] flotteFinal = flotteAdapted;
 
-            // Start the game loop in a background thread to avoid blocking the EDT
+            // Démarrer la boucle de jeu dans un thread en arrière-plan pour ne pas bloquer l'EDT
             new Thread(() -> {
                 if (vsBotFinal) {
                     JoueurGraphique joueur = BatailleNavale.initJoueur("Joueur", tailleFinal, flotteFinal);
-                    // map the selected opponent to a bot type string
+                    // Mapper l'adversaire sélectionné vers un type de bot (chaine interne)
                     String botType = "smart";
-                    if (opponent.equalsIgnoreCase("Bot (Markov)")) botType = "markov";
-                    else if (opponent.equalsIgnoreCase("Bot (MonteCarlo)")) botType = "montecarlo";
-                    else if (opponent.equalsIgnoreCase("Bot (Uniform)")) botType = "smart";
+                    if (opponent.equalsIgnoreCase("Ordinateur (Markov)")) botType = "markov";
+                    else if (opponent.equalsIgnoreCase("Ordinateur (MonteCarlo)")) botType = "montecarlo";
+                    else if (opponent.equalsIgnoreCase("Ordinateur (Uniforme)")) botType = "uniform";
                     Bot bot = BatailleNavale.initBot(tailleFinal, flotteFinal, botType);
                     joueur.jouerAvec(bot);
                 } else {

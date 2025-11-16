@@ -1,11 +1,11 @@
 package joueurs;
 
 /**
- * Container for the result of a match: the winning player, the total
- * number of moves (attacks) played in the match, and the number of
- * moves performed by the winner.  Use {@link #getWinnerMoves()} when
- * you want the number of attacks performed by the winning player
- * (bounded by the grid size).
+ * Conteneur pour le résultat d'un match : le joueur vainqueur, le nombre
+ * total de coups (attaques) joués dans la partie, et le nombre de coups
+ * effectués par le vainqueur. Utiliser {@link #getWinnerMoves()} pour
+ * obtenir le nombre d'attaques effectuées par le joueur gagnant
+ * (borné par la taille de la grille).
  */
 public class MatchResult {
     private final Joueur winner;
@@ -22,12 +22,12 @@ public class MatchResult {
         return winner;
     }
 
-    /** Total attacks in the match (both players combined). */
+    /** Nombre total d'attaques dans la partie (les deux joueurs combinés). */
     public int getTotalMoves() {
         return totalMoves;
     }
 
-    /** Number of attacks performed by the winning player. */
+    /** Nombre d'attaques effectuées par le joueur vainqueur. */
     public int getWinnerMoves() {
         return winnerMoves;
     }

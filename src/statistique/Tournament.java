@@ -7,18 +7,14 @@ import java.util.Locale;
 import bataillenavale.BatailleNavale;
 import joueurs.Bot;
 
-import bataillenavale.BatailleNavale;
-import joueurs.Bot;
-// no direct use of joueurs.Joueur here; MatchResult used below
-
 /**
- * Simple tournament runner that plays all available bot types against each other
- * (including self-play) N times, writes a CSV summary and draws a histogram PNG
- * of win rates per bot.
+ * Exécuteur de tournoi simple qui fait jouer tous les types de bots entre eux
+ * (y compris en self-play) N fois, écrit un résumé CSV et génère une table
+ * lisible des résultats avec le classement.
  */
 public class Tournament {
     public static void main(String[] args) throws Exception {
-        int N = 1000; // games per pairing
+        int N = 100; // games per pairing
         int taille = 10;
         if (args.length > 0) {
             try { N = Integer.parseInt(args[0]); } catch (NumberFormatException ex) { /* ignore */ }
@@ -29,20 +25,20 @@ public class Tournament {
 
         final int[] FLOTTE = {5, 4, 3, 3, 2, 2};
         final String[] botTypes = {"uniform", "markov", "montecarlo", "smart"};
-        final String[] labels = {"Uniform", "Markov", "MonteCarlo", "Smart"};
+        final String[] labels = {"Uniforme", "Markov", "MonteCarlo", "Intelligent"};
 
         final int B = botTypes.length;
-        final int[][] wins = new int[B][B]; // wins[i][j] = times bot i beat bot j
+        final int[][] wins = new int[B][B]; // wins[i][j] = nombre de victoires du bot i contre le bot j
 
-        System.out.println("Tournament: " + B + " bots, " + N + " games per pairing, grid=" + taille);
+        System.out.println("Tournoi : " + B + " bots, " + N + " parties par confrontation, grille=" + taille);
 
         File outDir = new File("Results");
         outDir.mkdirs();
 
-        // play each unordered pairing once (including self-play)
+        // jouer chaque confrontation non ordonnée une fois (sans self-play)
         for (int i = 0; i < B; i++) {
-            for (int j = i; j < B; j++) {
-                System.out.printf("Playing %s vs %s (%d games)...\n", labels[i], labels[j], N);
+            for (int j = i + 1; j < B; j++) {
+                System.out.printf("Parties %s vs %s (%d parties)...\n", labels[i], labels[j], N);
                 for (int k = 0; k < N; k++) {
                     Bot b1 = BatailleNavale.initBot(taille, FLOTTE, botTypes[i]);
                     Bot b2 = BatailleNavale.initBot(taille, FLOTTE, botTypes[j]);
@@ -57,7 +53,7 @@ public class Tournament {
         }
 
         int[] totalWins = new int[B];
-        int gamesPerBot = N * B; // plays each opponent (including self) N times
+        int gamesPerBot = N * (B - 1); // nombre de parties jouées par bot (chaque adversaire distinct N fois, sans self-play)
         for (int i = 0; i < B; i++) {
             int s = 0;
             for (int j = 0; j < B; j++) s += wins[i][j];
@@ -67,8 +63,13 @@ public class Tournament {
         double[] rate = new double[B];
         double[] stderr = new double[B];
         for (int i = 0; i < B; i++) {
-            rate[i] = (double) totalWins[i] / (double) gamesPerBot;
-            stderr[i] = Math.sqrt(rate[i] * (1.0 - rate[i]) / (double) gamesPerBot);
+            if (gamesPerBot > 0) {
+                rate[i] = (double) totalWins[i] / (double) gamesPerBot;
+                stderr[i] = Math.sqrt(rate[i] * (1.0 - rate[i]) / (double) gamesPerBot);
+            } else {
+                rate[i] = 0.0;
+                stderr[i] = 0.0;
+            }
         }
 
         // ranking
@@ -99,10 +100,10 @@ public class Tournament {
             }
         }
 
-        System.out.println("Wrote pairwise CSV to: " + pairCsv.getAbsolutePath());
-        System.out.println("Wrote summary CSV to: " + sumCsv.getAbsolutePath());
+        System.out.println("Fichier CSV pairwise écrit : " + pairCsv.getAbsolutePath());
+        System.out.println("Fichier résumé CSV écrit : " + sumCsv.getAbsolutePath());
 
-        // write a human-readable pairwise table and ranking
+        // écrire une table pairwise lisible et le classement
         File table = new File(outDir, "tournament_pairwise_table.txt");
         try (PrintWriter pw = new PrintWriter(table)) {
             // header
@@ -115,19 +116,19 @@ public class Tournament {
                 pw.println();
             }
             pw.println();
-            pw.println("Ranking:");
+            pw.println("Classement :");
             for (int pos = 0; pos < B; pos++) {
                 int i = idx[pos];
-                pw.printf(Locale.ROOT, "%d. %s — wins=%d, win_rate=%.4f (stderr=%.4f)\n", pos + 1, labels[i], totalWins[i], rate[i], stderr[i]);
+                pw.printf(Locale.ROOT, "%d. %s — victoires=%d, taux_victoire=%.4f (stderr=%.4f)\n", pos + 1, labels[i], totalWins[i], rate[i], stderr[i]);
             }
         }
-        System.out.println("Wrote pairwise table to: " + table.getAbsolutePath());
+        System.out.println("Fichier table pairwise écrit : " + table.getAbsolutePath());
 
         // Also print ranking to console
-        System.out.println("Ranking:");
+        System.out.println("Classement :");
         for (int pos = 0; pos < B; pos++) {
             int i = idx[pos];
-            System.out.printf("%d. %s — win_rate=%.4f (stderr=%.4f)\n", pos + 1, labels[i], rate[i], stderr[i]);
+            System.out.printf("%d. %s — taux_victoire=%.4f (stderr=%.4f)\n", pos + 1, labels[i], rate[i], stderr[i]);
         }
     }
 }

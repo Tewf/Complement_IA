@@ -1,14 +1,11 @@
 package logique;
 
 /**
- * Representation d'une coordonnée sur la grille de bataille navale.
- * <p>
- * Cette classe encapsule les coordonnées ligne/colonne et fournit
- * quelques méthodes utilitaires pour comparer, voisinage et conversion
- * vers/depuis une notation alphabétique.  Un constructeur à partir d'une
- * chaîne permet de convertir une notation comme « A1 » ou « c5 » en
- * indices internes (0 basé).  Un second constructeur accepte directement
- * les indices numériques.
+ * Représentation d'une coordonnée sur la grille de Bataille Navale.
+ *
+ * Cette classe encapsule les coordonnées ligne/colonne et fournit des
+ * méthodes utilitaires pour la comparaison, le voisinage et la conversion
+ * vers/depuis une notation alphabétique (par ex. "A1").
  */
 public class Coordonnee {
 
@@ -16,11 +13,11 @@ public class Coordonnee {
     private final int colonne;
 
     /**
-     * Construit une coordonnée à partir d'une chaîne telle que « A1 ».
-     * Les lettres peuvent être en majuscules ou en minuscules.  La
-     * conversion utilise un indice 0 basé pour la ligne et la colonne.
+     * Construit une coordonnée à partir d'une chaîne telle que "A1".
+     * Les lettres peuvent être en majuscules ou minuscules. Les indices
+     * ligne/colonne sont convertis en indices 0-based.
      *
-     * @param s chaîne de la forme lettre(s) suivie de chiffres
+     * @param s chaîne d'entrée (lettre(s) suivie(s) de chiffres)
      */
     public Coordonnee(String s) {
         char charC = s.charAt(0);
@@ -29,21 +26,21 @@ public class Coordonnee {
         } else if (charC >= 'A' && charC <= 'Z') {
             this.colonne = charC - 'A';
         } else {
-            throw new IllegalArgumentException("Format de colonne invalide : " + s);
+            throw new IllegalArgumentException("Format de colonne invalide : " + s);
         }
         try {
-            // soustraire 1 car les lignes dans l'interface utilisateur commencent à 1
+            // La saisie utilisateur utilise des indices de ligne 1-based
             this.ligne = Integer.parseInt(s.substring(1)) - 1;
         } catch (NumberFormatException ex) {
-            throw new IllegalArgumentException("Format de ligne invalide : " + s);
+            throw new IllegalArgumentException("Format de ligne invalide : " + s);
         }
     }
 
     /**
-     * Construit une coordonnée à partir d'indices 0 basés.
+     * Construit une coordonnée à partir d'indices 0-based.
      *
-     * @param l la ligne (0 basé)
-     * @param c la colonne (0 basé)
+     * @param l ligne (0-based)
+     * @param c colonne (0-based)
      */
     public Coordonnee(int l, int c) {
         this.ligne = l;
@@ -61,8 +58,8 @@ public class Coordonnee {
     @Override
     public boolean equals(Object o) {
         if (this == o) {
-			return true;
-		}
+            return true;
+        }
         if (o instanceof Coordonnee) {
             Coordonnee other = (Coordonnee) o;
             return this.ligne == other.ligne && this.colonne == other.colonne;
@@ -72,14 +69,14 @@ public class Coordonnee {
 
     @Override
     public int hashCode() {
-        // combinaison simple ligne/colonne pour un usage dans les HashMap/HashSet
+        // Combinaison simple ligne/colonne pour HashMap/HashSet
         return 31 * ligne + colonne;
     }
 
     /**
-     * Retourne vrai si la coordonnée passée est voisine immédiate (haut, bas,
-     * gauche ou droite).  Les diagonales ne sont pas considérées comme des
-     * voisines dans le cadre de la bataille navale.
+     * Retourne vrai si la coordonnée passée est voisine immédiate
+     * (haut, bas, gauche ou droite). Les diagonales ne sont pas considérées
+     * comme voisines en Bataille Navale.
      */
     public boolean voisine(Coordonnee c) {
         int diffColonne = Math.abs(c.colonne - this.colonne);
@@ -88,9 +85,8 @@ public class Coordonnee {
     }
 
     /**
-     * Compare cette coordonnée à une autre pour un tri simple.  La valeur
-     * retournée est négative, nulle ou positive suivant la position dans
-     * l'ordre lexicographique.
+     * Compare cette coordonnée à une autre pour un tri simple (ordre
+     * lexicographique). Retourne une valeur négative, nulle ou positive.
      */
     public int compareTo(Coordonnee c) {
         int valO = ligne * 100 + colonne;

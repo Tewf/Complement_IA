@@ -16,9 +16,9 @@ import joueurs.MatchResult;
 import joueurs.Bot;
 
 /**
- * Runs self-play experiments: each bot plays against itself N times.
- * Records the number of moves until the win, computes mean and standard
- * error, writes a CSV and produces a histogram PNG per bot.
+ * Exécute des expériences en self-play : chaque bot joue contre lui-même N fois.
+ * Enregistre le nombre de coups nécessaires pour gagner, calcule la moyenne
+ * et l'erreur type, écrit un CSV et produit un PNG récapitulatif.
  */
 public class Performance {
     public static void main(String[] args) throws Exception {
@@ -33,7 +33,7 @@ public class Performance {
 
         final int[] FLOTTE = {5, 4, 3, 3, 2, 2};
         final String[] botTypes = {"uniform", "markov", "montecarlo", "smart"};
-        final String[] labels = {"Uniform", "Markov", "MonteCarlo", "Smart"};
+        final String[] labels = {"Uniforme", "Markov", "MonteCarlo", "Intelligent"};
 
         File outDir = new File("Results");
         outDir.mkdirs();
@@ -49,7 +49,7 @@ public class Performance {
         for (int i = 0; i < botTypes.length; i++) allMoves.add(new ArrayList<>());
 
         for (int i = 0; i < botTypes.length; i++) {
-            System.out.printf("Running self-play for %s (%d trials)...\n", labels[i], N);
+            System.out.printf("Exécution self-play pour %s (%d essais)...\n", labels[i], N);
             List<Integer> moves = allMoves.get(i);
             for (int t = 0; t < N; t++) {
                 Bot b1 = BatailleNavale.initBot(taille, FLOTTE, botTypes[i]);
@@ -170,13 +170,13 @@ public class Performance {
         }
 
         g2.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
-        g2.drawString("Gaussian fit of winner-move distributions (per bot)", marginL, marginT - 20);
+        g2.drawString("Ajustement gaussien des distributions du nombre de coups gagnants (par bot)", marginL, marginT - 20);
 
         g2.dispose();
         File outPng = new File(outDir, "performance_gaussian_overlay.png");
         ImageIO.write(img2, "png", outPng);
-        System.out.println("Wrote gaussian overlay plot to: " + outPng.getAbsolutePath());
+        System.out.println("Fichier PNG (ajustement gaussien) écrit : " + outPng.getAbsolutePath());
 
-        System.out.println("Wrote performance CSV to: " + csv.getAbsolutePath());
+        System.out.println("Fichier performance CSV écrit : " + csv.getAbsolutePath());
     }
 }

@@ -7,11 +7,11 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * Gestion logique d'une grille de bataille navale.  La grille contient
- * une liste de navires placés et un ensemble de tirs déjà reçus.  Cette
- * classe ne connaît pas l'interface graphique ; elle ne manipule que des
- * données abstraites.  La classe `GrilleNavaleGraphique` étend celle‑ci
- * pour ajouter l'affichage.
+ * Gestion logique d'une grille de Bataille Navale. La grille contient une
+ * liste de navires placés et un ensemble de tirs reçus. Cette classe est
+ * indépendante de l'interface graphique et ne manipule que les données de
+ * domaine. La sous-classe `GrilleNavaleGraphique` ajoute le comportement
+ * d'affichage.
  */
 public class GrilleNavale {
 
@@ -21,7 +21,7 @@ public class GrilleNavale {
     private final Random rnd = new Random();
 
     /**
-     * Crée une grille de la taille indiquée (carrée).
+     * Crée une grille carrée de la taille indiquée.
      *
      * @param taille dimension de la grille (nombre de lignes et de colonnes)
      */
@@ -45,9 +45,9 @@ public class GrilleNavale {
     }
 
     /**
-     * Ajoute un navire à la grille s'il ne sort pas des limites, ne chevauche
-     * pas un navire existant et ne touche pas de façon adjacente (pas de
-     * navires accollés).  Retourne vrai en cas de succès, faux sinon.
+     * Ajoute un navire à la grille s'il ne dépasse pas les limites, ne chevauche
+     * pas un navire existant et ne touche pas (pas de navires adjacents).
+     * Retourne vrai si l'ajout a réussi.
      */
     public boolean ajouteNavire(Navire n) {
         if (!estDansGrille(n.getDebut()) || !estDansGrille(n.getFin())) {
@@ -63,10 +63,10 @@ public class GrilleNavale {
     }
 
     /**
-     * Place automatiquement une liste de navires de tailles données.
-     * Chaque navire est positionné aléatoirement tant qu'il respecte les
-     * contraintes de placement.  Cette méthode garantit que tous les
-     * navires sont placés avant de retourner.
+     * Place automatiquement une liste de navires aux tailles données. Chaque
+     * navire est positionné aléatoirement tant que les contraintes de
+     * placement sont respectées. Cette méthode garantit que tous les navires
+     * sont placés avant de retourner.
      *
      * @param taillesNavires tableau des longueurs des navires à placer
      */
@@ -84,9 +84,9 @@ public class GrilleNavale {
     }
 
     /**
-     * Traite un tir sur la grille.  Si la coordonnée a déjà été attaquée
-     * auparavant, on retourne faux.  Sinon, on enregistre le tir et on
-     * retourne vrai si un navire est touché.
+     * Traite un tir sur la grille. Si la coordonnée a déjà été attaquée,
+     * retourne faux. Sinon, enregistre le tir et retourne vrai si un navire
+     * a été touché.
      */
     public boolean recoitTir(Coordonnee c) {
         if (tirsRecus.contains(c)) {
@@ -102,7 +102,7 @@ public class GrilleNavale {
     }
 
     /**
-     * Indique si une coordonnée n'est occupée par aucun navire (à l'eau).
+     * Indique si la coordonnée est à l'eau (aucun navire ne l'occupe).
      */
     public boolean estALEau(Coordonnee c) {
         for (Navire n : navires) {
@@ -126,7 +126,7 @@ public class GrilleNavale {
     }
 
     /**
-     * Indique si un navire est coulé à la coordonnée donnée.
+     * Indique si un navire contenant la coordonnée donnée est coulé.
      */
     public boolean estCoule(Coordonnee c) {
         for (Navire n : navires) {
@@ -150,16 +150,16 @@ public class GrilleNavale {
     }
 
     /**
-     * Renvoie la liste des navires de la grille.  Utilisé pour l'affichage
-     * dans certaines interfaces graphiques.
+     * Renvoie la liste des navires présents sur la grille. Utilisé par les
+     * composants d'interface pour le rendu.
      */
     public List<Navire> getNavires() {
         return navires;
     }
 
     /**
-     * Indique si une coordonnée a déjà été attaquée.  Pratique pour les
-     * joueurs automatiques qui souhaitent éviter de répéter le même tir.
+     * Indique si la coordonnée a déjà été attaquée. Utile pour les joueurs
+     * automatiques qui doivent éviter de répéter un tir.
      */
     public boolean aDejaTire(Coordonnee c) {
         return tirsRecus.contains(c);

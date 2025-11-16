@@ -6,9 +6,9 @@ import interfacegraphique.GrilleNavaleGraphique;
 import logique.Coordonnee;
 
 /**
- * Bot basique qui attaque des cases aléatoires jusqu'à ce qu'il trouve
- * toutes les cibles.  Ce bot ne tient pas compte de l'historique des
- * touches autres que pour éviter de rejouer la même case.
+ * Bot basique qui attaque des cases aléatoires jusqu'à trouver toutes les
+ * cibles. Ce bot n'utilise pas d'heuristique avancée et ne conserve que
+ * l'information des cases déjà tirées pour éviter les répétitions.
  */
 public class Bot extends Joueur {
     protected final GrilleNavaleGraphique gng;
@@ -24,12 +24,12 @@ public class Bot extends Joueur {
 
     @Override
     protected void retourAttaque(Coordonnee c, int etat) {
-        // le bot basique n'a pas de retour d'information à traiter
+        // bot basique : aucun traitement nécessaire au retour d'attaque
     }
 
     @Override
     protected void retourDefense(Coordonnee c, int etat) {
-        // idem : aucune action nécessaire après avoir été attaqué
+        // aucune action nécessaire après avoir été attaqué
     }
 
     @Override
