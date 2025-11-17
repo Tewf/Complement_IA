@@ -3,9 +3,9 @@
 
 This repository contains a Java implementation of the Battleship game together
 with tools to evaluate automated strategies (bots) and produce reproducible
-experimental results. For a French-oriented presentation see `README.md` at
+experimental results. For a French-oriented presentation see `README_fr.md` at
 the project root (version française). The English version is provided in
-`README_EN.md`.
+`README.md`.
 
 What this project provides
 
