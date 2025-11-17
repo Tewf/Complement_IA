@@ -28,6 +28,3 @@ Merci de votre intérêt pour contribuer à ce projet.
 
 - Le dépôt contient une licence `LICENSE` (MIT par défaut). Assurez-vous que vos contributions
   sont compatibles avec cette licence.
-
-Si vous souhaitez que j'ajoute des règles de style automatisées (Checkstyle, formatter),
-je peux les configurer sur demande.
