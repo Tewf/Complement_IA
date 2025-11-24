@@ -1,0 +1,24 @@
+\begin{thebibliography}{1}
+
+\bibitem{mc2013}
+Exemple Auteur.
+\newblock Monte carlo methods for battleship-like inference.
+\newblock {\em Journal d'exemple}, 2013.
+
+\bibitem{prob2010}
+Marie Dupont and Paul Martin.
+\newblock Probabilistic placement counting for search games.
+\newblock {\em Revue des Algorithmes Probabilistes}, 2010.
+\newblock Article de synthèse, disponible en préprint.
+
+\bibitem{knuth1984texbook}
+Donald~E. Knuth.
+\newblock {\em The \TeX book}.
+\newblock Addison-Wesley, 1984.
+
+\bibitem{russell2009ai}
+Stuart Russell and Peter Norvig.
+\newblock {\em Artificial Intelligence: A Modern Approach}.
+\newblock Prentice Hall, 2009.
+
+\end{thebibliography}

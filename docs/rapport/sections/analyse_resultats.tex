@@ -1,0 +1,114 @@
+\section{Analyse des résultats}
+
+Cette section présente et interprète les résultats issus des différentes campagnes d’expérimentation.  
+
+Deux types d’analyses on été réalisé :
+\begin{itemize}
+    \item \emph{Tournoi} : permet une comparaison croisée des stratégies. \footnote{Un tournoi désigne ici un ensemble de confrontations répétées entre toutes les stratégies considérées.}
+    \item \emph{Self-play} : vise à mesurer la stabilité et la distribution des performances d’une stratégie lorsqu’elle joue contre elle-même. \footnote{Le self-play est couramment utilisé pour isoler la dynamique intrinsèque d’une stratégie, indépendamment d’un adversaire donné.}
+\end{itemize}
+
+% -------------------------------------------------------
+\subsection{Tournoi}
+% -------------------------------------------------------
+
+\subsubsection{Procédure}
+
+Le tournoi consiste à faire s’affronter les différentes stratégies sur un grand nombre de parties selon la configuration expérimentale définie dans la méthodologie.\footnote{Voir la section Méthodologie pour la description des paramètres : nombre de parties, conditions de départ, structure du tir.}  
+Les résultats sont ensuite regroupés dans deux fichiers principaux :
+
+\begin{itemize}
+    \item \texttt{tournament\_summary.csv} : récapitulatif global (nombre de parties, victoires, taux de victoire, erreur standard) ;
+    \item \texttt{tournament\_pairwise.csv} : résultats détaillés des confrontations deux-à-deux.
+\end{itemize}
+
+% -------------------------------------------------------
+\subsubsection{Tableau du tournoi}
+% -------------------------------------------------------
+
+\pgfplotstableread[col sep=comma]{../Results/tournament_summary.csv}\tourney
+\pgfplotstablesort[sort key=win_rate, sort cmp=float >]{\sortedT}{\tourney}
+
+Le tableau suivant est trié par taux de victoire décroissant.\footnote{Ce tri permet d’identifier rapidement les stratégies dominantes dans le tournoi.}
+
+\begin{center}
+\pgfplotstabletypeset[
+    columns={bot,games_played,wins,win_rate,standard_error,rank},
+    string type,
+    every head row/.style={before row=\toprule,after row=\midrule},
+    every last row/.style={after row=\bottomrule},
+    columns/bot/.style={string type,column name=Bot},
+    columns/games_played/.style={column name=Parties},
+    columns/wins/.style={column name=Victoires},
+    columns/win_rate/.style={column name=TauxVictoire,precision=3},
+    columns/standard_error/.style={column name=ErreurStd,precision=3},
+    columns/rank/.style={column name=Classement}
+]{\sortedT}
+\end{center}
+
+\pgfplotstablegetelem{0}{bot}\of{\sortedT}\edef\TopBot{\pgfplotsretval}
+\pgfplotstablegetelem{0}{win_rate}\of{\sortedT}\edef\TopWinRate{\pgfplotsretval}
+
+% -------------------------------------------------------
+\subsubsection{Analyse du tournoi}
+% -------------------------------------------------------
+
+La meilleure stratégie observée dans ce tournoi est \textbf{\TopBot}, avec un taux de victoire de \TopWinRate{}. Il convient d'interpréter ce résultat en conjonction avec l'erreur standard afin d'évaluer la robustesse statistique de cette performance.  
+
+Sur le plan du coût de calcul, les approches fondées sur des simulations Monte‑Carlo s'avèrent généralement plus gourmandes en ressources, surtout lorsque le budget d'évaluation par coup est élevé. Ce coût doit être mis en balance avec le gain effectif en performance lors du choix d'une stratégie pour une application donnée.  
+
+Par ailleurs, les stratégies de type markovien tendent à reproduire une séquence initiale de coups identique tant qu'aucun navire n'est touché. Ce comportement déterministe sur les premiers coups peut induire des biais exploitables et mérite d'être analysé plus finement.  
+
+Les méthodes basé Monte‑Carlo ne montrent pas nécessairement de motif décisionnel clair et leur comportement peut varier fortement selon la distribution des positions initiales des bateaux ; elles dépendent souvent de l'échantillonnage.  
+
+% -------------------------------------------------------
+\subsection{Self-play}
+% -------------------------------------------------------
+
+\subsubsection{Procédure}
+
+Les analyses de self-play visent à quantifier la performance intrinsèque d’une stratégie en l’opposant à elle-même\footnote{Cette approche met en évidence la régularité d'une stratégie sans dépendre d’un adversaire particulier.}.  
+Les résultats agrégés sont enregistrés dans \texttt{performance\_summary.csv}.
+
+% -------------------------------------------------------
+\subsubsection{Distribution (gaussienne) et visualisation}
+% -------------------------------------------------------
+
+Lorsque la distribution des longueurs de parties s’approche d’une loi normale, une densité gaussienne peut être superposée pour lisibilité analytique.\footnote{L’ajustement gaussien n’est informatif que si la distribution empirique présente un comportement unimodal et symétrique.}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.75\textwidth]{../Results/performance_gaussian_overlay.png}
+    \caption{Distribution (approx. gaussienne) des longueurs de parties pour un exemple de stratégie.}
+\end{figure}
+
+% -------------------------------------------------------
+\subsubsection{Tableau des performances (moyennes de coups)}
+% -------------------------------------------------------
+
+\pgfplotstableread[col sep=comma]{../Results/performance_summary.csv}\perf
+\pgfplotstablesort[sort key=mean_moves, sort cmp=float <]{\sortedPerf}{\perf}
+
+\begin{center}
+\pgfplotstabletypeset[
+    columns={bot,trials,mean_moves,std_error},
+    string type,
+    every head row/.style={before row=\toprule,after row=\midrule},
+    every last row/.style={after row=\bottomrule},
+    columns/bot/.style={string type,column name=Bot},
+    columns/trials/.style={column name=Essais},
+    columns/mean_moves/.style={column name=MoyenneCoups,precision=3},
+    columns/std_error/.style={column name=ErreurStd,precision=3}
+]{\sortedPerf}
+\end{center}
+
+\pgfplotstablegetelem{0}{bot}\of{\sortedPerf}\edef\BestMover{\pgfplotsretval}
+\pgfplotstablegetelem{0}{mean_moves}\of{\sortedPerf}\edef\BestMeanMoves{\pgfplotsretval}
+
+% -------------------------------------------------------
+\subsubsection{Analyse des moyennes de coups}
+% -------------------------------------------------------
+
+La stratégie la plus efficace, au sens du plus faible nombre moyen de coups nécessaires pour remporter une partie, est \textbf{\BestMover}, avec une moyenne de \BestMeanMoves{}\footnote{Comme pour les taux de victoire, l’erreur standard permet d’évaluer la stabilité de la performance.}.  
+
+Les résultats issus du self-play confirment la cohérence interne de la stratégie : jouer contre soi-même met en évidence son comportement intrinsèque, indépendant de la nature de l’adversaire. Ces observations sont en accord avec les performances mesurées lors du tournoi, renforçant la fiabilité de l’évaluation globale.

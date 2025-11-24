@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"ComplementIA","l":"bataillenavale"},{"m":"ComplementIA","l":"heuristic"},{"m":"ComplementIA","l":"interfacegraphique"},{"m":"ComplementIA","l":"joueurs"},{"m":"ComplementIA","l":"logique"},{"m":"ComplementIA","l":"statistique"}];updateSearchResults();

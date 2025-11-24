@@ -1,0 +1,49 @@
+\section{Stratégies étudiées (heuristiques)}
+
+Les stratégies implémentées dans le dépôt reposent sur deux composantes principales :
+\begin{itemize}
+  \item \textbf{Partie déterministe (Target)} : dédiée au \emph{ciblage} — exploitation des informations directes (cases touchées) pour déterminer l'orientation du navire et le couler.
+  \item \textbf{Partie probabiliste (Hunt)} : destinée à l'exploration et à l'estimation des positions plausibles des navires (placement counting, Monte Carlo) pour orienter les tirs en phase de recherche.
+\end{itemize}
+
+Les principales heuristiques étudiées sont résumées ci-dessous.
+% -------------------------------------------------------
+\footnote{Les différentes heuristiques se trouvent dans ~: \texttt{src/heuristic/} et \texttt{src/joueurs/SmartBot.java}.}
+%-------------------------------------------------------
+
+% -------------------------------------------------------
+\subsection{Uniforme (Uniform)}
+% -------------------------------------------------------
+
+Stratégie de base entièrement aléatoire.  
+À chaque tour, elle choisit uniformément une case non encore visée.  
+Elle sert de référence minimale (baseline) pour comparer les approches plus élaborées.
+
+% -------------------------------------------------------
+\subsection{Markov}
+% -------------------------------------------------------
+
+Stratégie probabiliste fondée sur le \emph{placement counting} :  
+pour chaque case, l’algorithme compte le nombre de placements possibles de la flotte compatibles avec l’état du plateau (touchés, coulés, cases à l’eau).  
+La case ayant la probabilité estimée la plus élevée d’appartenir à un navire est sélectionnée.
+
+% -------------------------------------------------------
+\subsection{Monte Carlo}
+% -------------------------------------------------------
+
+Méthode d’échantillonnage :  
+un grand nombre de placements aléatoires de la flotte encore possible sont générés, en respectant toutes les contraintes observées.  
+Une \emph{heatmap} est ensuite construite en comptabilisant la fréquence d’occupation de chaque case dans ces échantillons.  
+La stratégie tire sur la case la plus fréquemment occupée.
+
+% -------------------------------------------------------
+
+\subsection{Smart / Hybride}
+\label{subsec:smart}
+
+Stratégie hybride combinant les deux composantes décrites ci‑dessus : la phase d'exploration \emph{Hunt} (probabiliste) et la phase de ciblage \emph{Target} (déterministe). Concrètement :
+
+\begin{itemize}
+  \item \textbf{Hunt (exploration probabiliste)} : la stratégie utilise des estimations (par placement counting ou Monte Carlo) pour repérer des zones prometteuses.
+  \item \textbf{Target (ciblage déterministe)} : dès qu'une case est touchée, la stratégie applique un ciblage déterministe des cases adjacentes pour identifier l'orientation et couler le navire.
+\end{itemize}

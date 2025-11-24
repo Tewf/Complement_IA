@@ -1,0 +1,5 @@
+bot,trials,mean_moves,std_error
+Uniforme,100,94.340000,0.493845
+Markov,100,54.770000,1.218449
+MonteCarlo,100,55.480000,1.185304
+Intelligent,100,61.130000,1.140056

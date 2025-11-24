@@ -1,0 +1,63 @@
+\begin{thebibliography}{10}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Audinot et~al.(2014)Audinot, Bonnet, and Viennot]{Audinot2014}
+M.~Audinot, F.~Bonnet, and S.~Viennot.
+\newblock Optimal strategies against a random opponent in battleship.
+\newblock In \emph{19th Game Programming Workshop}, pages 67--74, 2014.
+
+\bibitem[Berry(2011)]{Berry2011}
+Nick Berry.
+\newblock Battleship strategy: mathematical analysis of the classic game.
+\newblock Blog DataGenetics, 2011.
+\newblock Disponible sur \url{http://datagenetics.com/blog/december32011/index.html}.
+
+\bibitem[Brown(2015)]{BrownBattleship}
+C.~L. Brown.
+\newblock Battleship probability calculator: Methodology.
+\newblock [Online] Disponible sur \url{https://cliambrown.com/battleship/methodology.php}, 2015.
+
+\bibitem[GA-Intelligence(2019)]{GAInt2019}
+GA-Intelligence.
+\newblock Deep reinforcement learning – how to win at battleship.
+\newblock Blog en ligne, 2019.
+\newblock \url{https://www.ga-intelligence.com/deep-reinforcement-learning-win-battleship}.
+
+\bibitem[Gelly and Wang(2012)]{Gelly2012}
+S.~Gelly and Y.~Wang.
+\newblock Introduction to monte carlo tree search.
+\newblock In \emph{Synthese}, pages 57--69. 2012.
+
+\bibitem[Houghton(2020)]{ChoughtonBattleshipAI}
+C.~Houghton.
+\newblock Battle-ship-ai.
+\newblock Project GitHub, 2020.
+\newblock \url{https://choughton21.github.io/Battle-Ship-AI/}.
+
+\bibitem[Hyafil and Rivest(1976)]{Hyafil1976}
+Laurent Hyafil and Ronald~L. Rivest.
+\newblock Constructing optimal binary decision trees is np-complete.
+\newblock \emph{Information Processing Letters}, 5\penalty0 (1):\penalty0 15--17, 1976.
+
+\bibitem[Park(2020)]{Park2020}
+Chanbin Park.
+\newblock Optimal strategies on attack and defense in the game of battleship.
+\newblock Acton Scholars research report 06-Optimal\_Strategies\_Battleship-200902, 2020.
+
+\bibitem[Russell and Norvig(2010)]{RussellNorvig2010}
+Stuart Russell and Peter Norvig.
+\newblock \emph{Intelligence Artificielle -- Une approche moderne}.
+\newblock Pearson Education France, 3 edition, 2010.
+\newblock Section 5.6.1, Jeux partiellement observables.
+
+\bibitem[Sansom et~al.(2021)]{Sansom2021Battleship}
+J.~Sansom et~al.
+\newblock Using supervised training to teach a network to play battleship.
+\newblock Medium article, 2021.
+\newblock \url{https://medium.com/@jayceesansom/using-supervised-training-to-teach-a-network-to-play-battleship-7522f28c52ca}.
+
+\end{thebibliography}

@@ -1,0 +1,49 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{csvsimple}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.18}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\graphicspath{{../Results/plots/}{../Results/}{revue_litterature/figures/}{../docs/}}
+
+\title{Rapport — Complement\_IA : Bataille Navale et heuristiques}
+% Authors
+\author{%
+	HAMLIL, Mohamed Ali Tewfik \\%
+	SGHIOUAR IDRISSI, Saad
+}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+Ce rapport présente le jeu étudié, les règles, les stratégies heuristiques implémentées, la démarche expérimentale suivie pour obtenir les résultats, une analyse des résultats et une conclusion.
+\end{abstract}
+
+\tableofcontents
+\clearpage
+
+% Sections
+\input{sections/introduction.tex}
+\input{sections/definition_et_regles.tex}
+\input{sections/revue_de_littérature.tex}
+\input{sections/strategies.tex}
+\input{sections/analyse_resultats.tex}
+\input{sections/conclusion.tex}
+
+\clearpage
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{biblio}
+
+\end{document}

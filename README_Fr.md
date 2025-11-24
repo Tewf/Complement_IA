@@ -1,9 +1,8 @@
-# Projet : Bataille Navale — Extensions statistiques
+# Bataille Navale — Extensions statistiques
 
-Ce dépôt contient une implémentation Java du jeu « Bataille Navale » accompagnée
-d'outils pour évaluer automatiquement des stratégies (bots) et produire des
-résultats expérimentaux réutilisables.
+Ce dépôt contient une implémentation Java du jeu de la bataille navale ainsi que des outils pour évaluer des stratégies automatisées (bots) et produire des résultats expérimentaux reproductibles.
 
+<<<<<<< Updated upstream
 Fonctionnalités principales
 
 - Moteur de jeu complet (grille, navires, gestion des tirs).
@@ -17,69 +16,117 @@ Prérequis
 - Shell POSIX (ex. `bash`).
 
 Compilation
+=======
+## Fonctionnalités
+
+- Implémentation Java modulaire du moteur de jeu (grille, navires, tirs).
+- Plusieurs implémentations de bots pour l'évaluation : `Uniform`, `Markov`, `MonteCarlo`, `Smart`.
+- Interface graphique simple (Swing) pour jeu interactif.
+- Outils statistiques pour exécuter des tournois et des expériences, produisant des résumés CSV et des visualisations PNG.
+
+## Documentation et rapport
+
+- La documentation du projet (référence API et notes développeur) se trouve dans le répertoire `docs/`. La référence API générée par `javadoc` est accessible via `docs/api/index.html`.
+- Un rapport académique (sources LaTeX et instructions de compilation) est disponible dans `rapport/`. Le rapport décrit le jeu, les heuristiques, le protocole expérimental et contient des sections d'analyse des résultats.
+
+## Prérequis
+
+- JDK 11 ou version plus récente.
+- Shell POSIX compatible (`bash` pour les exemples).
+
+## Compilation
 
 ```bash
-# Compiler les sources dans `bin`
+# Compiler les sources dans le répertoire `bin`
 javac -d bin $(find src -name "*.java")
 ```
 
-Exemples d'exécution
+## Exécution des exemples
 
-- Interface graphique :
+- Lancer l'interface graphique :
 
 ```bash
 java --module-path bin -m ComplementIA/bataillenavale.Main
 ```
 
-- Lancer un tournoi (ex. 1000 parties par confrontation) :
+- Lancer un tournoi (ex. 1000 matchs par affrontement) :
 
 ```bash
 java --module-path bin -m ComplementIA/statistique.Tournament 1000
 ```
 
-- Exécuter l'outil de performance (ex. 100 essais self-play par bot) :
+- Lancer l'outil de performance (ex. 100 auto-parties par bot) :
 
 ```bash
 java --module-path bin -m ComplementIA/statistique.Performance 100
 ```
 
-Sorties produites
+## Consulter la documentation générée
 
-Les fichiers générés sont écrits dans le dossier `Results/` :
+- Ouvrir l'API générée dans votre navigateur :
+>>>>>>> Stashed changes
 
-- `tournament_pairwise.csv` — matrice des victoires (ligne = vainqueur, colonne = adversaire).
-- `tournament_summary.csv` — résumé par bot (games_played, wins, win_rate, standard_error, rank).
-- `tournament_pairwise_table.txt` — table lisible et classement.
-- `performance_summary.csv` — résumé des essais self-play (moyenne de coups, erreur-type, ...).
+```bash
+xdg-open docs/api/index.html
+```
+
+- Ou servir le répertoire `docs/` via un serveur HTTP simple (utile selon le navigateur) :
+
+```bash
+cd $(git rev-parse --show-toplevel)
+python3 -m http.server 8000 --directory docs
+# puis ouvrir http://localhost:8000/api/ dans votre navigateur
+```
+
+## Compilation du rapport académique
+
+Les sources LaTeX du rapport se trouvent dans `rapport/`. Depuis la racine du dépôt :
+
+```bash
+cd rapport
+make
+# sortie : rapport/main.pdf
+```
+
+Si vous n'avez pas une distribution LaTeX complète, installez TeX Live ou utilisez un service LaTeX en ligne.
+
+## Sorties
+
+Toutes les sorties sont écrites dans `Results/` :
+
+- `tournament_pairwise.csv` — matrice de victoires pairwise.
+- `tournament_summary.csv` — résumé par bot (`games_played`, `wins`, `win_rate`, `std_error`, `rank`).
+- `tournament_pairwise_table.txt` — tableau pairwise lisible et classement.
+- `performance_summary.csv` — résumé des auto-parties (moyenne de coups, erreur standard, ...).
 - `performance_gaussian_overlay.png` — visualisation PNG des distributions.
 
-Ces fichiers sont encodés en UTF-8 et exploitables par R, Python, Excel, etc.
+## Structure du projet
 
-Structure du projet
-
-- `src/` — sources Java organisées par package :
-  - `bataillenavale/` : points d'entrée et UI (`Main`, `BatailleNavale`).
-  - `logique/` : coeur du moteur (`GrilleNavale`, `Navire`, `Coordonnee`).
-  - `joueurs/` : interfaces et implémentations de joueurs (`Joueur`, `Bot`, `SmartBot`).
-  - `heuristic/` : interface heuristique et implémentations (`Heuristic`, `Uniforme`, `Markov`, `MonteCarlo`).
-  - `interfacegraphique/` : composants Swing.
-  - `statistique/` : utilitaires d'expérimentation (`Tournament`, `Performance`).
+- `src/` — packages source Java :
+  - `bataillenavale/` — points d'entrée et UI (`Main`, `BatailleNavale`).
+  - `logique/` — logique centrale (`GrilleNavale`, `Navire`, `Coordonnee`).
+  - `joueurs/` — joueurs et implémentations (`Joueur`, `Bot`, `SmartBot`).
+  - `heuristic/` — interface et heuristiques (`Heuristic`, `Uniform`, `Markov`, `MonteCarlo`).
+  - `interfacegraphique/` — composants Swing.
+  - `statistique/` — utilitaires expérimentaux (`Tournament`, `Performance`).
 - `bin/` — classes compilées (résultat de `javac -d bin`).
-- `Results/` — sorties des expérimentations.
+- `docs/` — documentation générée (HTML API et autres docs).
+  - `rapport/` — sources LaTeX et fichiers du rapport (compilez pour obtenir `rapport/main.pdf`).
+- `Results/` — sorties des expériences.
 
-Contribuer
+## Contribuer
 
-- Forkez le dépôt et créez une branche pour votre fonctionnalité.
-- Respectez les conventions Java et fournissez JavaDoc pour les classes publiques.
-- Pour les changements significatifs, ajoutez un exemple ou un test.
-- Ouvrez une pull request avec une description claire des modifications.
+Forkez le dépôt et ouvrez une pull request. Merci d'inclure :
 
-Licence
+- JavaDoc pour les classes publiques affectées.
+- Un exemple / test de régression lorsque le comportement change.
+- Les seeds et la commande exacte utilisées pour toute expérience afin d'assurer la reproductibilité.
 
-Le dépôt est fourni avec le fichier `LICENSE` (MIT) à la racine.
+## Licence
 
-Notes techniques
+Voir le fichier `LICENSE` à la racine du dépôt (MIT).
 
+<<<<<<< Updated upstream
 - Le projet utilise le système de modules Java (`module-info.java`).
 - Les identifiants et noms de packages sont principalement en français.
 - Les messages affichés à l'utilisateur sont en français.
@@ -92,3 +139,5 @@ plus détaillé peuvent être ajoutés ultérieurement.
 ---
 
 Merci d'avoir consulté ce dépôt. Pour toute question, ouvrez une issue.
+=======
+>>>>>>> Stashed changes

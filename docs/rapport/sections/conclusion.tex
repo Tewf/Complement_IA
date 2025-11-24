@@ -1,0 +1,18 @@
+\section{Conclusion}
+
+Cette étude a permis d'évaluer de manière systématique plusieurs stratégies appliquées au jeu de la Bataille Navale, en combinant analyses de tournoi et expérimentations en self-play. Les résultats se déclinent comme suit :
+
+\paragraph{Observations principales}
+\begin{itemize}
+  \item Les approches fondées sur le \emph{placement counting} (stratégie Markov) offrent les meilleures performances globales : taux de victoire élevé, efficacité moyenne supérieure et excellente stabilité statistique.
+  \item Les méthodes Monte Carlo présentent des performances proches mais requièrent un coût de calcul plus élevé et montrent une plus grande variabilité liée à l'échantillonnage.
+  \item La stratégie hybride combine efficacement ciblage déterministe et exploration probabiliste, se montrant robuste et cohérente avec les tendances observées.
+\end{itemize}
+
+\paragraph{Pistes d'amélioration}
+\begin{itemize}
+  \item Optimiser le temps de calcul des approches Monte Carlo (algorithmes plus rapides ou parallélisation).
+  \item Affiner la composante probabiliste via des modèles plus précis ou des heuristiques adaptées.
+  \item Intégrer des stratégies apprenantes pour adapter la recherche à des configurations ou distributions de flotte variées.
+  \item Étendre les expérimentations à d'autres tailles de grille ou schémas de placement afin d'obtenir une évaluation plus complète des comportements stratégiques.
+\end{itemize}

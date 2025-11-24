@@ -17,7 +17,7 @@ import logique.Coordonnee;
  * SmartBot : bot combinant deux approches principales :
  *
  * <ul>
- * <li>Hunt & Target : lorsqu'un hit est détecté, explorer Haut/Bas/Gauche/Droite
+ * <li>Hunt &amp; Target : lorsqu'un hit est détecté, explorer Haut/Bas/Gauche/Droite
  *     pour confirmer l'axe, puis tirer le long de l'axe confirmé jusqu'à ce
  *     que le navire soit coulé ; en cas de miss, tester la direction opposée.</li>
  * <li>Probabilités (heatmap) : quand il n'y a pas de cible active, estimer

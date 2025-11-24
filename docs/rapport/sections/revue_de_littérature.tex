@@ -1,0 +1,22 @@
+\section{Revue de littérature}
+% -------------------------------------------------------
+
+Cette section présente une synthèse des principales approches étudiées dans la littérature concernant la résolution du jeu de la \emph{Bataille Navale}.  
+La version complète, incluant une bibliographie détaillée, est disponible dans : \texttt{rapport/revue\_litterature}.
+
+\subsection*{Résumé}
+
+Les travaux existants peuvent être regroupés en trois grandes familles :
+
+\begin{itemize}
+  \item \textbf{Approches heuristiques} : stratégies de recherche de type \emph{hunt--target}, utilisation de motifs de parité pour optimiser le recouvrement de la grille, balayages systématiques améliorés, ainsi que diverses règles dérivées de la géométrie des navires.
+
+  \item \textbf{Méthodes probabilistes} : élaboration de matrices de probabilité associant à chaque case la vraisemblance de présence d’un navire, actualisation des estimations après chaque tir, ou encore stratégies reposant sur des distributions construites à partir d’échantillonnages ou de simulations répétées.
+
+  \item \textbf{Modèles computationnels avancés} : techniques d’exploration fondées sur des arbres de recherche, stratégies hybrides combinant heuristiques et estimations probabilistes, méthodes stochastiques basées sur la génération de nombreux scénarios de placement, ainsi que diverses formes d’optimisation algorithmique.
+\end{itemize}
+
+La littérature souligne que les stratégies combinant heuristiques et informations probabilistes sont particulièrement efficaces pour la phase de \emph{chasse}, alors que les méthodes reposant sur des mécanismes d’exploration et d’évaluation systématique améliorent notablement la phase de \emph{ciblage}.  
+Les performances observées dépendent cependant de plusieurs paramètres : taille de la grille, composition de la flotte, contraintes de placement et quantité de simulations utilisées.
+
+La bibliographie complète est fournie dans le dossier : \texttt{rapport/revue\_litterature/}.

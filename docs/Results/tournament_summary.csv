@@ -1,0 +1,5 @@
+bot,games_played,wins,win_rate,standard_error,rank
+Uniforme,300,6,0.020000,0.008083,4
+Markov,300,223,0.743333,0.025218,1
+MonteCarlo,300,201,0.670000,0.027148,2
+Intelligent,300,170,0.566667,0.028610,3

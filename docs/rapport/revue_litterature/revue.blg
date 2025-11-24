@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: revue.aux
+The style file: plainnat.bst
+Database file #1: bib/revuerefs.bib
+Warning--empty publisher in Gelly2012
+You've used 10 entries,
+            2773 wiz_defined-function locations,
+            659 strings with 6512 characters,
+and the built_in function-call counts, 3832 in all, are:
+= -- 351
+> -- 163
+< -- 11
++ -- 58
+- -- 48
+* -- 225
+:= -- 577
+add.period$ -- 36
+call.type$ -- 10
+change.case$ -- 45
+chr.to.int$ -- 10
+cite$ -- 21
+duplicate$ -- 192
+empty$ -- 364
+format.name$ -- 65
+if$ -- 834
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 5
+newline$ -- 63
+num.names$ -- 40
+pop$ -- 120
+preamble$ -- 1
+purify$ -- 35
+quote$ -- 0
+skip$ -- 157
+stack$ -- 0
+substring$ -- 87
+swap$ -- 25
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 105
+warning$ -- 1
+while$ -- 38
+width$ -- 0
+write$ -- 141
+(There was 1 warning)
