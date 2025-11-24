@@ -1,0 +1,84 @@
+\documentclass[12pt,a4paper]{article}
+
+% Encodage & langue
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{csquotes}
+
+% Mise en page
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{setspace}
+\setstretch{1.2}
+
+% Liens
+\usepackage{hyperref}
+
+% Bibliographie
+\usepackage[numbers]{natbib}
+
+\begin{document}
+
+\begin{center}
+    {\LARGE \textbf{Stratégies optimales et approches computationnelles dans le jeu «~Bataille navale~»}}\\[1em]
+    {\large Revue de littérature}
+\end{center}
+
+\section*{Introduction}
+
+Le jeu de la \emph{Bataille navale} (ou \emph{Battleship}) est un jeu combinatoire à deux joueurs : chacun place une flotte de navires sur une grille, puis tente de deviner les positions adverses en appelant des tirs sur des coordonnées. C’est un jeu à information \textbf{imparfaite} : les positions des navires adverses restent cachées, ce qui le rapproche des jeux dits « au brouillard de guerre », tels que \emph{Kriegspiel} aux échecs ou Stratego.
+
+Chaque tir fournit une information partielle (« à l’eau », « touché », « coulé »), ce qui oblige le joueur à mettre à jour en permanence son estimation de l’état réel de la grille.
+
+Malgré des règles simples, la Bataille navale soulève plusieurs difficultés stratégiques et algorithmiques. D’une part, elle peut être vue comme un problème séquentiel dans un espace partiellement observable, pertinent pour les modèles de planification sous incertitude. D’autre part, en théorie des jeux, il s’agit d’un jeu à somme nulle où des stratégies mixtes peuvent intervenir, notamment pour le placement optimal des navires. Cette revue synthétise les contributions majeures sur (i) les modèles théoriques et la complexité, (ii) les heuristiques classiques, (iii) les approches probabilistes et computationnelles, et (iv) les principes d’un bon placement défensif.
+
+\section*{Contributions théoriques et modèles formels}
+
+Sur le plan théorique, déterminer une stratégie optimale minimisant le nombre de tirs nécessaires constitue un problème difficile. Modéliser la recherche de navires revient à construire un \textbf{arbre de décision binaire} où chaque tir correspond à une interrogation (succès ou échec). Trouver l’arbre de profondeur minimale permettant de distinguer toutes les configurations possibles est un problème NP-complet.
+
+Hyafil et Rivest (1976) ont en effet démontré que la construction d’arbres de décision optimaux est NP-complète, ce qui s’applique directement à la stratégie dite « 20 questions » du jeu : une stratégie déterministe optimale n’est donc pas calculable efficacement pour des grilles réalistes.
+
+\section*{Heuristiques de recherche et modèles probabilistes}
+
+Face à l’intractabilité du problème optimal, de nombreuses heuristiques ont été proposées. Parmi les plus étudiées :
+
+\begin{itemize}
+    \item \textbf{Hunt \& Target} : stratégie intuitive où l’on alterne une phase de chasse (tirs espacés ou aléatoires) et une phase de ciblage dès qu’un navire est touché. Cette approche nécessite typiquement environ 66 coups en moyenne contre un placement aléatoire.
+    
+    \item \textbf{Balayage par motifs (parité)} : tirer sur un motif de cases alternées (damier) garantit qu’aucun navire de longueur $\ge 2$ n’est ignoré. Ce motif améliore légèrement l’efficacité ($\approx$ 65 coups).
+    
+    \item \textbf{Ciblage systématique} : une fois un navire touché, explorer prioritairement les cases alignées permet de réduire les tirs inutiles et d’accélérer la destruction du navire.
+\end{itemize}
+
+Les travaux plus récents ont introduit des \textbf{modèles probabilistes}, notamment des cartes de densité ou des probabilités de placement, qui exploitent toutes les informations observées.
+
+\section*{Approches computationnelles et apprentissage}
+
+La Bataille navale a également servi de banc d’essai pour des méthodes issues de l’IA moderne :
+
+\begin{itemize}
+    \item \textbf{Apprentissage supervisé} : extraction de modèles prédictifs à partir de grandes bases de parties simulées.
+    
+    \item \textbf{Apprentissage par renforcement} : un agent apprend à optimiser ses tirs par itérations successives, en maximisant son taux de victoire.
+    
+    \item \textbf{Monte Carlo Tree Search (MCTS)} : utilisé pour explorer des scénarios plausibles et gérer l’incertitude.
+\end{itemize}
+
+Ces méthodes permettent d’exploiter efficacement l’information partielle, au prix parfois d’un coût de calcul élevé.
+
+\section*{Stratégies défensives et optimisation du placement}
+
+La plupart des analyses s’intéressent à l’attaquant, mais l’optimisation du \textbf{placement} des navires est tout aussi cruciale. La question centrale est : existe-t-il un placement qui maximise la difficulté de l’adversaire, même si celui-ci utilise une stratégie optimale ?
+
+Des travaux statistiques et computationnels suggèrent que des placements irréguliers, non symétriques, ou imitant des distributions probabilistes non triviales, augmentent sensiblement la difficulté moyenne de détection.
+
+\section*{Conclusion}
+
+Cette revue a mis en lumière les principaux résultats liés à la Bataille navale. Théoriquement, le problème de recherche optimale relève de la complexité NP-complète, ce qui justifie l’usage d’approches heuristiques. Sur le plan pratique, les stratégies probabilistes modernes (cartes de densité, méthodes bayésiennes) surpassent largement les heuristiques humaines traditionnelles. Enfin, les approches computationnelles (MCTS, apprentissage) montrent que la modélisation de l’incertitude est essentielle pour obtenir des performances proches des stratégies optimales.
+
+\bibliographystyle{plainnat}
+\nocite{*}
+\bibliography{bib/revuerefs}
+
+\end{document}
